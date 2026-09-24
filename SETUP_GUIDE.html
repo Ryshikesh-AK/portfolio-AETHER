@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ashi Portfolio - Beginner Setup & Transfer Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1a1e24;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 13.5px;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .title-group h1 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+      margin: 0 0 6px 0;
+    }
+
+    .title-group p {
+      font-size: 13px;
+      color: #64748b;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .badge {
+      background: #f1f5f9;
+      color: #0284c7;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid #e0f2fe;
+    }
+
+    /* Summary Card */
+    .overview-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 100%);
+      border: 1px solid #dcfce7;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .overview-card h3 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #166534;
+    }
+
+    .overview-card p {
+      margin: 0;
+      color: #374151;
+      font-size: 12.5px;
+    }
+
+    /* Steps */
+    .step-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      page-break-inside: avoid;
+    }
+
+    .step-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      background: #0284c7;
+      color: #ffffff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .step-title h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    p {
+      margin: 0 0 10px 0;
+    }
+
+    ul, ol {
+      margin: 0 0 12px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    /* Code Blocks */
+    .code-box {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 10px 0;
+    }
+
+    .code-comment {
+      color: #94a3b8;
+    }
+
+    .code-cmd {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .inline-code {
+      background: #f1f5f9;
+      color: #0284c7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    /* Callout Note */
+    .note-box {
+      background: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 12px;
+      color: #92400e;
+    }
+
+    .note-box strong {
+      color: #78350f;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1.5px solid #cbd5e1;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      vertical-align: top;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 24px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      color: #94a3b8;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="title-group">
+      <h1>Ashi Portfolio — Project Setup Guide</h1>
+      <p>Easy, step-by-step handover instructions for running this application locally</p>
+    </div>
+    <div class="badge">Non-Technical Edition</div>
+  </div>
+
+  <!-- Overview -->
+  <div class="overview-card">
+    <h3>🌱 Welcome! What is this project?</h3>
+    <p>This is a complete full-stack website consisting of an animated interactive 3D/WebGL portfolio and a secure Node.js backend server with an SQLite database and image management admin panel. Everything runs locally on your machine with <strong>just 1 tool required</strong>.</p>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-card">
+    <div class="step-title">
+      <div class="step-num">1</div>
+      <h2>The Only Prerequisite: Install Node.js</h2>
+    </div>
+    <p>Node.js allows your computer to run the web server. If you don't already have it installed:</p>
+    <ol>
+      <li>Visit the official website: <strong>https://nodejs.org</strong></li>
+      <li>Click on the big green button labeled <strong>LTS (Recommended for Most Users)</strong>.</li>
+      <li>Run the installer file and click <strong>Next &gt; Next &gt; Finish</strong> (default settings are perfect).</li>
+      <li>To verify, open your terminal (<strong>Command Prompt</strong> or <strong>PowerShell</strong> on Windows, or <strong>Terminal</strong> on Mac) and type:</li>
+    </ol>
+    <div class="code-box">
+      <span class="code-cmd">node -v</span><br>
+      <span class="code-comment"># Should display a version like: v20.x.x or v22.x.x</span>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-card">
+    <div class="step-title">
+      <div class="step-num">2</div>
+      <h2>Preparing and Sending the Project Files</h2>
+    </div>
+    <p>If you are packaging the folder to send to someone else, keep it lightweight:</p>
+    <ul>
+      <li><strong>Do NOT include heavy cache folders:</strong> If there is a <span class="inline-code">node_modules/</span> folder inside <span class="inline-code">server/</span>, delete it before creating the .zip. The new user will regenerate it cleanly in Step 3.</li>
+      <li><strong>Make sure you include:</strong> All website folders (<span class="inline-code">assets/</span>, <span class="inline-code">scripts/</span>, <span class="inline-code">styles/</span>, <span class="inline-code">gallery/</span>, <span class="inline-code">server/</span>, and <span class="inline-code">index.html</span>).</li>
+      <li><strong>Unzip:</strong> The recipient should extract the zip file onto their computer (e.g. Desktop or Downloads).</li>
+    </ul>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-card">
+    <div class="step-title">
+      <div class="step-num">3</div>
+      <h2>Install & Start the Server (3 Easy Commands)</h2>
+    </div>
+    <p>Open your terminal, navigate inside the project folder, and enter these commands:</p>
+
+    <div class="code-box">
+      <span class="code-comment"># 1. Move into the backend server directory</span><br>
+      <span class="code-cmd">cd server</span><br><br>
+      <span class="code-comment"># 2. Install the required server dependencies automatically</span><br>
+      <span class="code-cmd">npm install</span><br><br>
+      <span class="code-comment"># 3. Start the application</span><br>
+      <span class="code-cmd">npm start</span>
+    </div>
+
+    <div class="note-box">
+      <strong>💡 First time setup note:</strong> If a <span class="inline-code">.env</span> file is missing inside the <span class="inline-code">server</span> folder, simply duplicate <span class="inline-code">.env.example</span> and rename it to <span class="inline-code">.env</span> before running <span class="inline-code">npm start</span>.
+    </div>
+
+    <p>When the terminal says:</p>
+    <div class="code-box" style="background:#042f2e; border:1px solid #14b8a6; color:#a7f3d0;">
+      Ashi server running at http://localhost:3000<br>
+      Database initialized and connected.
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step-card">
+    <div class="step-title">
+      <div class="step-num">4</div>
+      <h2>Viewing the Website & Admin Panel</h2>
+    </div>
+    <p>Keep the terminal window open (do not close it while using the site), and open your favorite browser:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Destination</th>
+          <th>URL (Type in address bar)</th>
+          <th>What It Is</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Main Portfolio</strong></td>
+          <td><span class="inline-code">http://localhost:3000</span></td>
+          <td>The full interactive website with 3D canvas, intro, and project gallery.</td>
+        </tr>
+        <tr>
+          <td><strong>Admin Panel</strong></td>
+          <td><span class="inline-code">http://localhost:3000/admin</span></td>
+          <td>Upload artworks, manage projects, rearrange gallery, and edit bio.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 10px; font-size: 12px; color: #475569;">
+      <strong>Default Admin Credentials:</strong> Username is <span class="inline-code">admin</span>. (Configured in your <span class="inline-code">server/.env</span> file).
+    </div>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="step-card">
+    <div class="step-title">
+      <div class="step-num">?</div>
+      <h2>Quick Troubleshooting for Common Problems</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Problem</th>
+          <th>Cause & Solution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>'node' or 'npm' is not recognized</strong></td>
+          <td>Node.js was installed while the terminal was open. Close the terminal completely and reopen it.</td>
+        </tr>
+        <tr>
+          <td><strong>Error: Port 3000 is already in use</strong></td>
+          <td>Another software on your computer is using port 3000. Open <span class="inline-code">server/.env</span>, change <span class="inline-code">PORT=3000</span> to <span class="inline-code">PORT=3005</span>, save, and restart.</td>
+        </tr>
+        <tr>
+          <td><strong>Images appear blank</strong></td>
+          <td>Ensure the <span class="inline-code">server/data/</span> and <span class="inline-code">gallery/</span> folders were included when unzipping.</td>
+        </tr>
+        <tr>
+          <td><strong>How do I stop the server?</strong></td>
+          <td>Press <span class="inline-code">Ctrl + C</span> in the terminal window to shut down the server.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>Project Handover &bull; Ashi Web Application</div>
+    <div>Generated for Local Deployment</div>
+  </div>
+
+</body>
+</html>

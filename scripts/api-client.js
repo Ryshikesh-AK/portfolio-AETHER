@@ -27,7 +27,10 @@
       desc: typeof project.desc === 'string' ? project.desc : '',
       image: typeof project.image === 'string' ? project.image : '',
       badges: Array.isArray(project.badges) ? project.badges.map(String) : [],
-      alt: typeof project.alt === 'string' ? project.alt : ''
+      alt: typeof project.alt === 'string' ? project.alt : '',
+      showPhoto: project.showPhoto !== undefined ? Boolean(project.showPhoto) : true,
+      showVideo: project.showVideo !== undefined ? Boolean(project.showVideo) : true,
+      showGraphic: project.showGraphic !== undefined ? Boolean(project.showGraphic) : true
     };
   }
 

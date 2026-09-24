@@ -285,6 +285,11 @@
     e.desc.value = (p && p.desc) || '';
     e.badges.value = p ? p.badges.join(', ') : '';
     e.featured.checked = !!(p && p.featured);
+    const activePhotos = state.projects.filter((x) => isPhotoProject(x) && x.showPhoto !== false && (!p || x.id !== p.id)).length;
+    const activeVideos = state.projects.filter((x) => isVideoProject(x) && x.showVideo !== false && (!p || x.id !== p.id)).length;
+    e.showGraphic.checked = p ? p.showGraphic !== false : true;
+    e.showPhoto.checked = p ? p.showPhoto !== false : (activePhotos < 3);
+    e.showVideo.checked = p ? p.showVideo !== false : (activeVideos < 3);
 
     const checkContainer = $('#category-checks');
     if (!state.categories.length) {
@@ -328,6 +333,32 @@
   $('#dialog-cancel').addEventListener('click', () => dlg.close());
   dlg.addEventListener('close', clearFile);
 
+  form.elements.showPhoto.addEventListener('change', () => {
+    if (form.elements.showPhoto.checked) {
+      const active = state.projects.filter((x) => isPhotoProject(x) && x.showPhoto !== false && (!state.editing || x.id !== state.editing.id)).length;
+      if (active >= 3) {
+        form.elements.showPhoto.checked = false;
+        dialogError('Photography showcase limit reached (3 of 3 items active). Deselect an existing photo first.');
+        notify('Photography showcase limit reached (3 of 3 items active).', 'error');
+      } else {
+        dialogError(null);
+      }
+    }
+  });
+
+  form.elements.showVideo.addEventListener('change', () => {
+    if (form.elements.showVideo.checked) {
+      const active = state.projects.filter((x) => isVideoProject(x) && x.showVideo !== false && (!state.editing || x.id !== state.editing.id)).length;
+      if (active >= 3) {
+        form.elements.showVideo.checked = false;
+        dialogError('Videography showcase limit reached (3 of 3 items active). Deselect an existing video first.');
+        notify('Videography showcase limit reached (3 of 3 items active).', 'error');
+      } else {
+        dialogError(null);
+      }
+    }
+  });
+
   fileInput.addEventListener('change', () => {
     if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
     dialogError(null);
@@ -343,6 +374,23 @@
     dialogError(null);
     const e = form.elements;
     const file = fileInput.files[0];
+    let id = state.editing && state.editing.id;
+
+    if (e.showPhoto.checked) {
+      const active = state.projects.filter((x) => isPhotoProject(x) && x.showPhoto !== false && (!id || x.id !== id)).length;
+      if (active >= 3) {
+        dialogError('Photography showcase limit reached (3 of 3 items active). Please uncheck "Show in Photography Showcase" or hide another photo.');
+        return;
+      }
+    }
+    if (e.showVideo.checked) {
+      const active = state.projects.filter((x) => isVideoProject(x) && x.showVideo !== false && (!id || x.id !== id)).length;
+      if (active >= 3) {
+        dialogError('Videography showcase limit reached (3 of 3 items active). Please uncheck "Show in Videography Showcase" or hide another video.');
+        return;
+      }
+    }
+
     const body = {
       title: e.title.value,
       meta: e.meta.value, subtitle: e.subtitle.value, year: e.year.value,
@@ -350,13 +398,16 @@
       alt: e.alt.value, heroTitle: e.heroTitle.value, heroTag: e.heroTag.value,
       badges: e.badges.value.split(',').map((s) => s.trim()).filter(Boolean),
       categories: [...$('#category-checks').querySelectorAll('input:checked')].map((i) => i.value),
-      featured: e.featured.checked
+      featured: e.featured.checked,
+      showGraphic: e.showGraphic.checked,
+      showPhoto: e.showPhoto.checked,
+      showVideo: e.showVideo.checked
     };
     if (state.editing || e.slug.value.trim()) body.slug = e.slug.value.trim();   // blank slug on a new project = derive from title
 
     const buttons = form.querySelectorAll('button');
     buttons.forEach((b) => { b.disabled = true; });
-    let id = state.editing && state.editing.id;
+    id = state.editing && state.editing.id;
     try {
       if (id) await api('PATCH', `/api/admin/projects/${id}`, body);
       else {
@@ -436,6 +487,38 @@
   }));
 
   // ---- mapping (Photography, Videography, Graphic Designer) ---------------------------
+  const DISCIPLINE_LIMITS = {
+    photo: 3,
+    video: 3
+  };
+
+  const DISCIPLINE_FORMATS = {
+    photo: [
+      { slug: 'architecture', label: 'Architecture' },
+      { slug: 'editorial', label: 'Editorial' },
+      { slug: 'analog', label: 'Analog' },
+      { slug: 'photography', label: 'General Photo' }
+    ],
+    video: [
+      { slug: 'cinematic', label: 'Cinematic' },
+      { slug: 'commercial', label: 'Commercial' },
+      { slug: 'experimental', label: 'Experimental' },
+      { slug: 'videography', label: 'General Video' }
+    ],
+    graphic: [
+      { slug: 'spatial', label: 'Spatial' },
+      { slug: 'telemetry', label: 'Telemetry' },
+      { slug: 'identity', label: 'Identity' },
+      { slug: 'systems', label: 'Systems' }
+    ]
+  };
+
+  const mappingFilters = {
+    photo: 'all',
+    video: 'all',
+    graphic: 'all'
+  };
+
   function renderMappingCard(p, disciplineKey, propName, onLabel) {
     const isChecked = p[propName] !== false;
     const checkbox = el('input', {
@@ -447,6 +530,30 @@
 
     const statusPill = el('span', { class: `mapping-status-pill ${isChecked ? 'on' : 'off'}` }, isChecked ? 'Live on site' : 'Hidden');
 
+    const formats = DISCIPLINE_FORMATS[disciplineKey] || [];
+    const activeFormatSlug = (p.categories || []).find((c) => formats.some((f) => f.slug === c)) || (formats[0] && formats[0].slug);
+    const activeFormatObj = formats.find((f) => f.slug === activeFormatSlug);
+    const formatDisplay = activeFormatObj ? activeFormatObj.label : (activeFormatSlug || 'Standard');
+
+    // Format select on card
+    const formatSelect = el('select', {
+      class: 'card-format-select',
+      'aria-label': `Format for ${p.title}`,
+      onchange: run(async (ev) => {
+        ev.stopPropagation();
+        const nextFormat = formatSelect.value;
+        const formatSlugs = formats.map((f) => f.slug);
+        let nextCats = (p.categories || []).filter((c) => !formatSlugs.includes(c));
+        nextCats.push(nextFormat);
+        if (disciplineKey === 'photo' && !nextCats.includes('photography')) nextCats.push('photography');
+        if (disciplineKey === 'video' && !nextCats.includes('videography')) nextCats.push('videography');
+        await api('PATCH', `/api/admin/projects/${p.id}`, { categories: nextCats });
+        p.categories = nextCats;
+        notify(`Updated format of "${p.title}" to ${nextFormat.toUpperCase()}`);
+        renderMapping();
+      })
+    }, ...formats.map((f) => el('option', { value: f.slug, selected: f.slug === activeFormatSlug }, f.label)));
+
     const card = el('div', { class: `mapping-card ${isChecked ? 'is-active' : ''}` },
       // Media preview
       el('div', { class: 'mapping-media-preview' },
@@ -456,7 +563,8 @@
         el('div', { class: 'mapping-badge-overlay' },
           el('span', { class: 'mapping-badge-pill' }, p.id ? `#${p.id}` : 'WORK'),
           p.year ? el('span', { class: 'mapping-badge-pill' }, p.year) : null,
-          disciplineKey === 'video' ? el('span', { class: 'mapping-badge-pill video-pill' }, '▶ VIDEO') : null
+          disciplineKey === 'video' ? el('span', { class: 'mapping-badge-pill video-pill' }, '▶ VIDEO') : null,
+          el('span', { class: 'mapping-badge-pill format-pill' }, formatDisplay)
         )
       ),
       // Content
@@ -466,14 +574,21 @@
           el('div', { class: 'mapping-card-sub' }, p.subtitle || p.meta || 'Showcase Project')
         ),
         el('div', { class: 'mapping-card-cats' },
-          ...(p.categories || []).map((cat) => el('span', { class: 'mapping-cat-tag' }, cat))
+          ...(p.categories || []).map((cat) => {
+            const isFormat = formats.some((f) => f.slug === cat);
+            return el('span', { class: `mapping-cat-tag ${isFormat ? 'format-highlight' : ''}` }, cat);
+          })
+        ),
+        el('div', { class: 'mapping-card-format-row' },
+          el('span', { class: 'mapping-format-label' }, 'Format:'),
+          formatSelect
         )
       ),
       // Checkbox Toggle Row
       el('div', {
         class: 'mapping-card-toggle',
         onclick: (ev) => {
-          if (ev.target !== checkbox) {
+          if (ev.target !== checkbox && ev.target !== formatSelect) {
             checkbox.checked = !checkbox.checked;
             checkbox.dispatchEvent(new Event('change'));
           }
@@ -487,6 +602,24 @@
     checkbox.addEventListener('change', run(async (ev) => {
       ev.stopPropagation();
       const nextChecked = checkbox.checked;
+
+      // Limit validation: prevent selecting more than 3 active photos or videos
+      if (nextChecked && DISCIPLINE_LIMITS[disciplineKey]) {
+        const max = DISCIPLINE_LIMITS[disciplineKey];
+        const activeCount = state.projects.filter(
+          (proj) => (disciplineKey === 'photo' ? isPhotoProject(proj) : isVideoProject(proj)) &&
+                    proj[propName] !== false &&
+                    proj.id !== p.id
+        ).length;
+
+        if (activeCount >= max) {
+          checkbox.checked = false;
+          const itemType = disciplineKey === 'photo' ? 'photo' : 'video';
+          notify(`Selection limit reached: ${onLabel} showcase is limited to ${max} items. Please uncheck another ${itemType} before activating this one.`, 'error');
+          return;
+        }
+      }
+
       try {
         const payload = {};
         payload[propName] = nextChecked;
@@ -515,19 +648,46 @@
       const allP = state.projects.filter(isPhotoProject);
       const activeP = allP.filter((p) => p.showPhoto !== false);
       const c = $('#photo-count');
-      if (c) c.textContent = `${activeP.length} of ${allP.length} visible`;
+      if (c) {
+        const max = DISCIPLINE_LIMITS.photo;
+        if (activeP.length === max) {
+          c.className = 'mapping-count full';
+          c.textContent = `${activeP.length} of ${max} visible (Limit reached)`;
+        } else if (activeP.length > max) {
+          c.className = 'mapping-count over';
+          c.textContent = `${activeP.length} of ${max} visible (Exceeds limit of ${max})`;
+        } else {
+          c.className = 'mapping-count available';
+          c.textContent = `${activeP.length} of ${max} visible (${max - activeP.length} available)`;
+        }
+      }
     }
     if (videoGrid) {
       const allV = state.projects.filter(isVideoProject);
       const activeV = allV.filter((p) => p.showVideo !== false);
       const c = $('#video-count');
-      if (c) c.textContent = `${activeV.length} of ${allV.length} visible`;
+      if (c) {
+        const max = DISCIPLINE_LIMITS.video;
+        if (activeV.length === max) {
+          c.className = 'mapping-count full';
+          c.textContent = `${activeV.length} of ${max} visible (Limit reached)`;
+        } else if (activeV.length > max) {
+          c.className = 'mapping-count over';
+          c.textContent = `${activeV.length} of ${max} visible (Exceeds limit of ${max})`;
+        } else {
+          c.className = 'mapping-count available';
+          c.textContent = `${activeV.length} of ${max} visible (${max - activeV.length} available)`;
+        }
+      }
     }
     if (graphicGrid) {
       const allG = state.projects.filter(isGraphicProject);
       const activeG = allG.filter((p) => p.showGraphic !== false);
       const c = $('#graphic-count');
-      if (c) c.textContent = `${activeG.length} of ${allG.length} visible`;
+      if (c) {
+        c.className = 'mapping-count';
+        c.textContent = `${activeG.length} of ${allG.length} visible`;
+      }
     }
   }
 
@@ -542,7 +702,6 @@
   }
 
   function isGraphicProject(p) {
-    // If not photo-only and not video-only, or has works categories / hero slot
     const cats = p.categories || [];
     const isPhoto = isPhotoProject(p);
     const isVideo = isVideoProject(p);
@@ -557,19 +716,370 @@
     if (!photoGrid || !videoGrid || !graphicGrid) return;
 
     // 1. Photography
-    const photos = state.projects.filter(isPhotoProject);
-    photoGrid.replaceChildren(...photos.map((p) => renderMappingCard(p, 'photo', 'showPhoto', 'Photography')));
+    const allPhotos = state.projects.filter(isPhotoProject);
+    const pFilter = mappingFilters.photo;
+    const photos = pFilter === 'all' ? allPhotos : allPhotos.filter((p) => (p.categories || []).includes(pFilter));
+    if (photos.length) {
+      photoGrid.replaceChildren(...photos.map((p) => renderMappingCard(p, 'photo', 'showPhoto', 'Photography')));
+    } else {
+      photoGrid.replaceChildren(el('div', { class: 'mapping-empty-state' },
+        el('strong', {}, `No photography projects matching format "${pFilter}".`),
+        el('p', { class: 'hint' }, 'Use "+ Select Photos" above to map projects with this format.')
+      ));
+    }
 
     // 2. Videography
-    const videos = state.projects.filter(isVideoProject);
-    videoGrid.replaceChildren(...videos.map((p) => renderMappingCard(p, 'video', 'showVideo', 'Videography')));
+    const allVideos = state.projects.filter(isVideoProject);
+    const vFilter = mappingFilters.video;
+    const videos = vFilter === 'all' ? allVideos : allVideos.filter((p) => (p.categories || []).includes(vFilter));
+    if (videos.length) {
+      videoGrid.replaceChildren(...videos.map((p) => renderMappingCard(p, 'video', 'showVideo', 'Videography')));
+    } else {
+      videoGrid.replaceChildren(el('div', { class: 'mapping-empty-state' },
+        el('strong', {}, `No videography projects matching format "${vFilter}".`),
+        el('p', { class: 'hint' }, 'Use "+ Select Videos" above to map projects with this format.')
+      ));
+    }
 
     // 3. Graphic Designer
-    const graphics = state.projects.filter(isGraphicProject);
-    graphicGrid.replaceChildren(...graphics.map((p) => renderMappingCard(p, 'graphic', 'showGraphic', 'Graphic Designer')));
+    const allGraphics = state.projects.filter(isGraphicProject);
+    const gFilter = mappingFilters.graphic;
+    const graphics = gFilter === 'all' ? allGraphics : allGraphics.filter((p) => (p.categories || []).includes(gFilter));
+    if (graphics.length) {
+      graphicGrid.replaceChildren(...graphics.map((p) => renderMappingCard(p, 'graphic', 'showGraphic', 'Graphic Designer')));
+    } else {
+      graphicGrid.replaceChildren(el('div', { class: 'mapping-empty-state' },
+        el('strong', {}, `No graphic design projects matching format "${gFilter}".`),
+        el('p', { class: 'hint' }, 'Use "+ Select Works" above to map projects with this format.')
+      ));
+    }
 
     updateMappingCounts();
   }
+
+  // ---- Map Project Media Dialog (Select new images/videos based on formats) ----------
+  const mapDlg = $('#map-media-dialog');
+  const mapForm = $('#map-media-form');
+  const targetDisc = $('#map-target-discipline');
+  const targetFormat = $('#map-target-format');
+  const mapLimitBanner = $('#map-limit-banner');
+  const mapSearchInput = $('#map-search');
+  const mapFormatFilter = $('#map-filter-format');
+  const mapStatusFilter = $('#map-filter-status');
+  const mapPickerGrid = $('#map-project-list');
+  const mapSelCount = $('#map-selection-count');
+  const mapSubmitBtn = $('#map-dialog-submit');
+  const mapCancelBtn = $('#map-dialog-cancel');
+  const mapCloseBtn = $('#map-dialog-close');
+  const mapError = $('#map-dialog-error');
+
+  const selectedMapProjectIds = new Set();
+
+  function updateTargetFormatDropdown(disciplineKey, preferredFormat) {
+    if (!targetFormat) return;
+    const formats = DISCIPLINE_FORMATS[disciplineKey] || [];
+    targetFormat.replaceChildren(...formats.map((f) => el('option', { value: f.slug, selected: f.slug === preferredFormat }, f.label)));
+  }
+
+  function updateMapLimitBanner() {
+    if (!mapLimitBanner) return;
+    const discKey = targetDisc ? targetDisc.value : 'photo';
+    if (!DISCIPLINE_LIMITS[discKey]) {
+      mapLimitBanner.className = 'map-limit-notice info';
+      mapLimitBanner.innerHTML = 'ℹ️ <strong>Graphic Designer Showcase:</strong> Public works grid is designed for 5 featured projects.';
+      return;
+    }
+    const max = DISCIPLINE_LIMITS[discKey];
+    const propName = discKey === 'photo' ? 'showPhoto' : 'showVideo';
+    const discName = discKey === 'photo' ? 'Photography' : 'Videography';
+    const itemType = discKey === 'photo' ? 'photo' : 'video';
+
+    // Count how many projects currently in this discipline are active on the site (excluding ones currently being selected in the picker)
+    const activeInDisc = state.projects.filter(
+      (p) => (discKey === 'photo' ? isPhotoProject(p) : isVideoProject(p)) &&
+             p[propName] !== false &&
+             !selectedMapProjectIds.has(p.id)
+    ).length;
+
+    const remaining = max - activeInDisc - selectedMapProjectIds.size;
+
+    if (activeInDisc >= max && selectedMapProjectIds.size === 0) {
+      mapLimitBanner.className = 'map-limit-notice full';
+      mapLimitBanner.innerHTML = `⚠️ <strong>${discName} Selection Limit (${max} items max):</strong> All ${max} showcase slots are currently active on the live site. To select new ${itemType}s, please uncheck an existing one in the showcase grid first.`;
+    } else if (remaining === 0) {
+      mapLimitBanner.className = 'map-limit-notice warn';
+      mapLimitBanner.innerHTML = `⚠️ <strong>${discName} Selection Limit (${max} items max):</strong> Showcase capacity reached (${max} of ${max} slots filled).`;
+    } else if (remaining < 0) {
+      mapLimitBanner.className = 'map-limit-notice full';
+      mapLimitBanner.innerHTML = `🚨 <strong>Selection Exceeds Limit:</strong> You have selected ${Math.abs(remaining)} too many ${itemType}s. Maximum allowed is ${max}.`;
+    } else {
+      mapLimitBanner.className = 'map-limit-notice info';
+      mapLimitBanner.innerHTML = `ℹ️ <strong>${discName} Showcase Limit:</strong> Exactly ${max} items are displayed on the website. <strong>${remaining} slot${remaining === 1 ? '' : 's'} available</strong> (${activeInDisc + selectedMapProjectIds.size} of ${max} used).`;
+    }
+  }
+
+  function updateMapCategoryFilterDropdown() {
+    if (!mapFormatFilter) return;
+    const currentVal = mapFormatFilter.value;
+    const allCategories = state.categories || [];
+    mapFormatFilter.replaceChildren(
+      el('option', { value: '' }, 'Filter by current category: Any'),
+      ...allCategories.map((c) => el('option', { value: c.slug }, c.label))
+    );
+    mapFormatFilter.value = currentVal;
+  }
+
+  function updateMapSubmitButton() {
+    if (!mapSubmitBtn || !mapSelCount) return;
+    const count = selectedMapProjectIds.size;
+    mapSelCount.textContent = `${count} project(s) selected`;
+    mapSubmitBtn.disabled = count === 0;
+    if (count > 0) {
+      const discText = targetDisc && targetDisc.selectedOptions[0] ? targetDisc.selectedOptions[0].textContent : 'Showcase';
+      const formatText = targetFormat && targetFormat.selectedOptions[0] ? targetFormat.selectedOptions[0].textContent : 'Format';
+      mapSubmitBtn.textContent = `Map ${count} Project(s) to ${discText} (${formatText})`;
+    } else {
+      mapSubmitBtn.textContent = 'Map Selected to Showcase';
+    }
+  }
+
+  function renderMapPicker() {
+    if (!mapPickerGrid) return;
+    const q = (mapSearchInput ? mapSearchInput.value : '').trim().toLowerCase();
+    const catFilter = mapFormatFilter ? mapFormatFilter.value : '';
+    const statusFilter = mapStatusFilter ? mapStatusFilter.value : 'all';
+    const discKey = targetDisc ? targetDisc.value : 'photo';
+
+    const filtered = state.projects.filter((p) => {
+      // 1. Text search
+      if (q) {
+        const hay = [p.title, p.slug, p.id, p.meta, p.subtitle].filter(Boolean).join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      // 2. Category filter
+      if (catFilter && !(p.categories || []).includes(catFilter)) {
+        return false;
+      }
+      // 3. Status filter
+      if (statusFilter === 'has-media' && !p.image && !p.thumb) {
+        return false;
+      }
+      if (statusFilter === 'unmapped') {
+        const isMapped = discKey === 'photo' ? isPhotoProject(p) : discKey === 'video' ? isVideoProject(p) : isGraphicProject(p);
+        if (isMapped) return false;
+      }
+      return true;
+    });
+
+    if (!filtered.length) {
+      mapPickerGrid.replaceChildren(el('div', { class: 'mapping-empty-state' },
+        el('strong', {}, 'No projects match your filter criteria.'),
+        el('p', { class: 'hint' }, 'Try clearing search or changing the filter options above.')
+      ));
+      return;
+    }
+
+    const formats = DISCIPLINE_FORMATS[discKey] || [];
+    mapPickerGrid.replaceChildren(...filtered.map((p) => {
+      const isMapped = discKey === 'photo' ? isPhotoProject(p) : discKey === 'video' ? isVideoProject(p) : isGraphicProject(p);
+      const isSelected = selectedMapProjectIds.has(p.id);
+
+      const checkbox = el('input', {
+        type: 'checkbox',
+        class: 'picker-item-checkbox',
+        checked: isSelected,
+        'aria-label': `Select project ${p.title}`
+      });
+
+      const card = el('div', {
+        class: `picker-item-card ${isSelected ? 'is-selected' : ''}`,
+        onclick: (ev) => {
+          if (ev.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+          }
+          if (checkbox.checked) {
+            // Validate selection limit before adding
+            if (DISCIPLINE_LIMITS[discKey]) {
+              const max = DISCIPLINE_LIMITS[discKey];
+              const propName = discKey === 'photo' ? 'showPhoto' : 'showVideo';
+              const discName = discKey === 'photo' ? 'Photography' : 'Videography';
+              const itemType = discKey === 'photo' ? 'photo' : 'video';
+
+              const activeCount = state.projects.filter(
+                (x) => (discKey === 'photo' ? isPhotoProject(x) : isVideoProject(x)) &&
+                       x[propName] !== false &&
+                       !selectedMapProjectIds.has(x.id)
+              ).length;
+
+              if (activeCount + selectedMapProjectIds.size >= max) {
+                checkbox.checked = false;
+                const availableSlots = Math.max(0, max - activeCount);
+                const msg = `Selection limit reached: ${discName} showcase is limited to ${max} items (currently ${activeCount} active). You can select at most ${availableSlots} item(s). Deselect an existing ${itemType} first to add more.`;
+                if (mapError) {
+                  mapError.textContent = msg;
+                  mapError.hidden = false;
+                }
+                notify(msg, 'error');
+                return;
+              }
+            }
+            selectedMapProjectIds.add(p.id);
+            if (mapError) mapError.hidden = true;
+          } else {
+            selectedMapProjectIds.delete(p.id);
+            if (mapError) mapError.hidden = true;
+          }
+          card.classList.toggle('is-selected', checkbox.checked);
+          updateMapSubmitButton();
+          updateMapLimitBanner();
+        }
+      },
+        el('div', { class: 'picker-item-thumb' },
+          (p.thumb || p.image)
+            ? el('img', { src: urlOf(p.thumb || p.image), alt: p.title, loading: 'lazy' })
+            : el('div', { class: 'noimg' }, 'No Media'),
+          el('span', { class: `picker-status-tag ${isMapped ? 'mapped' : 'available'}` }, isMapped ? 'In Discipline' : 'Available'),
+          checkbox
+        ),
+        el('div', { class: 'picker-item-body' },
+          el('div', {},
+            el('div', { class: 'picker-item-title' }, p.title),
+            el('div', { class: 'picker-item-meta' }, `#${p.id} · ${p.slug || ''} ${p.year ? `· ${p.year}` : ''}`)
+          ),
+          el('div', { class: 'picker-item-cats' },
+            ...(p.categories || []).map((cat) => {
+              const isFmt = formats.some((f) => f.slug === cat);
+              return el('span', { class: `picker-cat-tag ${isFmt ? 'format-tag' : ''}` }, cat);
+            })
+          )
+        )
+      );
+
+      return card;
+    }));
+  }
+
+  function openMapMediaDialog(defaultDiscipline = 'photo', preferredFormat = null) {
+    if (!mapDlg) return;
+    selectedMapProjectIds.clear();
+    if (targetDisc) targetDisc.value = defaultDiscipline;
+    updateTargetFormatDropdown(defaultDiscipline, preferredFormat);
+    updateMapCategoryFilterDropdown();
+    updateMapLimitBanner();
+    if (mapSearchInput) mapSearchInput.value = '';
+    if (mapFormatFilter) mapFormatFilter.value = '';
+    if (mapStatusFilter) mapStatusFilter.value = 'all';
+    if (mapError) mapError.hidden = true;
+    updateMapSubmitButton();
+    renderMapPicker();
+    mapDlg.showModal();
+  }
+
+  if (targetDisc) {
+    targetDisc.addEventListener('change', () => {
+      selectedMapProjectIds.clear();
+      updateTargetFormatDropdown(targetDisc.value);
+      updateMapSubmitButton();
+      updateMapLimitBanner();
+      renderMapPicker();
+    });
+  }
+  if (targetFormat) {
+    targetFormat.addEventListener('change', () => {
+      updateMapSubmitButton();
+    });
+  }
+  if (mapSearchInput) mapSearchInput.addEventListener('input', renderMapPicker);
+  if (mapFormatFilter) mapFormatFilter.addEventListener('change', renderMapPicker);
+  if (mapStatusFilter) mapStatusFilter.addEventListener('change', renderMapPicker);
+
+  if (mapCancelBtn && mapDlg) mapCancelBtn.addEventListener('click', () => mapDlg.close());
+  if (mapCloseBtn && mapDlg) mapCloseBtn.addEventListener('click', () => mapDlg.close());
+
+  if (mapForm) {
+    mapForm.addEventListener('submit', run(async (ev) => {
+      ev.preventDefault();
+      if (!selectedMapProjectIds.size) return;
+
+      const disc = targetDisc ? targetDisc.value : 'photo';
+      const format = targetFormat ? targetFormat.value : '';
+      const discFormats = (DISCIPLINE_FORMATS[disc] || []).map((f) => f.slug);
+      const discLabel = targetDisc ? targetDisc.selectedOptions[0].textContent : disc;
+      const count = selectedMapProjectIds.size;
+
+      // Validation check before PATCHing
+      if (DISCIPLINE_LIMITS[disc]) {
+        const max = DISCIPLINE_LIMITS[disc];
+        const propName = disc === 'photo' ? 'showPhoto' : 'showVideo';
+        const activeCount = state.projects.filter(
+          (x) => (disc === 'photo' ? isPhotoProject(x) : isVideoProject(x)) &&
+                 x[propName] !== false &&
+                 !selectedMapProjectIds.has(x.id)
+        ).length;
+
+        if (activeCount + selectedMapProjectIds.size > max) {
+          const msg = `Validation Error: Cannot map ${selectedMapProjectIds.size} item(s). ${discLabel} showcase is limited to ${max} items (currently ${activeCount} active).`;
+          if (mapError) {
+            mapError.textContent = msg;
+            mapError.hidden = false;
+          }
+          notify(msg, 'error');
+          return;
+        }
+      }
+
+      if (mapSubmitBtn) mapSubmitBtn.disabled = true;
+
+      for (const pid of selectedMapProjectIds) {
+        const p = state.projects.find((x) => x.id === pid);
+        if (!p) continue;
+        let newCats = (p.categories || []).filter((c) => !discFormats.includes(c));
+        if (format) newCats.push(format);
+        if (disc === 'photo' && !newCats.includes('photography')) newCats.push('photography');
+        if (disc === 'video' && !newCats.includes('videography')) newCats.push('videography');
+
+        const payload = { categories: newCats };
+        if (disc === 'photo') payload.showPhoto = true;
+        if (disc === 'video') payload.showVideo = true;
+        if (disc === 'graphic') payload.showGraphic = true;
+
+        await api('PATCH', `/api/admin/projects/${p.id}`, payload);
+      }
+
+      await load();
+      if (mapDlg) mapDlg.close();
+      notify(`Successfully mapped ${count} project(s) to ${discLabel} as ${format.toUpperCase()}`);
+    }));
+  }
+
+  // Setup header button and section "+ Select" buttons
+  const mainMapBtn = $('#btn-open-mapping-selector');
+  if (mainMapBtn) {
+    mainMapBtn.addEventListener('click', () => openMapMediaDialog('photo'));
+  }
+
+  document.querySelectorAll('.btn-add-to-discipline').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      openMapMediaDialog(btn.dataset.discipline || 'photo');
+    });
+  });
+
+  // Setup format filter bars per section
+  [
+    { barId: 'photo-format-filters', disc: 'photo' },
+    { barId: 'video-format-filters', disc: 'video' },
+    { barId: 'graphic-format-filters', disc: 'graphic' }
+  ].forEach(({ barId, disc }) => {
+    const bar = document.getElementById(barId);
+    if (!bar) return;
+    bar.querySelectorAll('.format-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        bar.querySelectorAll('.format-filter-btn').forEach((b) => b.classList.toggle('active', b === btn));
+        mappingFilters[disc] = btn.dataset.format || 'all';
+        renderMapping();
+      });
+    });
+  });
 
 
   // ---- start ----------------------------------------------------------------------------

@@ -74,8 +74,13 @@
 
     <section id="tab-mapping" hidden>
       <div class="mapping-header">
-        <h2>Discipline &amp; Showcase Media Mapping</h2>
-        <p class="hint">Toggle the checkmarks to select or deselect which photos, videos, and graphic design projects appear live on the main website.</p>
+        <div class="mapping-header-row">
+          <div>
+            <h2>Discipline &amp; Showcase Media Mapping</h2>
+            <p class="hint">Select new images and videos from projects based on formats, or toggle checkmarks to manage live portfolio visibility.</p>
+          </div>
+          <button type="button" id="btn-open-mapping-selector" class="primary">+ Select Project Media by Format</button>
+        </div>
       </div>
 
       <!-- Photography Section -->
@@ -84,9 +89,19 @@
           <div class="mapping-title-left">
             <span class="section-badge photo">PHOTOGRAPHY</span>
             <h3>Photography Mapping</h3>
+            <span id="photo-count" class="mapping-count">0 of 3 visible</span>
           </div>
-          <span id="photo-count" class="mapping-count">0 selected</span>
+          <div class="mapping-title-actions">
+            <div class="format-filter-bar" id="photo-format-filters" role="group" aria-label="Filter photography by format">
+              <button type="button" class="format-filter-btn active" data-format="all">All</button>
+              <button type="button" class="format-filter-btn" data-format="architecture">Architecture</button>
+              <button type="button" class="format-filter-btn" data-format="editorial">Editorial</button>
+              <button type="button" class="format-filter-btn" data-format="analog">Analog</button>
+            </div>
+            <button type="button" class="btn-add-to-discipline" data-discipline="photo">+ Select Photos</button>
+          </div>
         </div>
+        <p class="mapping-section-hint"><strong>Showcase limit: 3 items maximum.</strong> The 3-column asymmetric layout displays up to 3 selected photos. Turn off an active photo to select a different one.</p>
         <div id="mapping-photography-grid" class="mapping-grid"></div>
       </div>
 
@@ -96,9 +111,19 @@
           <div class="mapping-title-left">
             <span class="section-badge video">VIDEOGRAPHY</span>
             <h3>Videography Mapping</h3>
+            <span id="video-count" class="mapping-count">0 of 3 visible</span>
           </div>
-          <span id="video-count" class="mapping-count">0 selected</span>
+          <div class="mapping-title-actions">
+            <div class="format-filter-bar" id="video-format-filters" role="group" aria-label="Filter videography by format">
+              <button type="button" class="format-filter-btn active" data-format="all">All</button>
+              <button type="button" class="format-filter-btn" data-format="cinematic">Cinematic</button>
+              <button type="button" class="format-filter-btn" data-format="commercial">Commercial</button>
+              <button type="button" class="format-filter-btn" data-format="experimental">Experimental</button>
+            </div>
+            <button type="button" class="btn-add-to-discipline" data-discipline="video">+ Select Videos</button>
+          </div>
         </div>
+        <p class="mapping-section-hint"><strong>Showcase limit: 3 items maximum.</strong> The 3-column asymmetric layout displays up to 3 selected videos. Turn off an active video to select a different one.</p>
         <div id="mapping-videography-grid" class="mapping-grid"></div>
       </div>
 
@@ -108,8 +133,18 @@
           <div class="mapping-title-left">
             <span class="section-badge works">GRAPHIC DESIGNER</span>
             <h3>Graphic Designer Mapping</h3>
+            <span id="graphic-count" class="mapping-count">0 selected</span>
           </div>
-          <span id="graphic-count" class="mapping-count">0 selected</span>
+          <div class="mapping-title-actions">
+            <div class="format-filter-bar" id="graphic-format-filters" role="group" aria-label="Filter graphic design by format">
+              <button type="button" class="format-filter-btn active" data-format="all">All</button>
+              <button type="button" class="format-filter-btn" data-format="spatial">Spatial</button>
+              <button type="button" class="format-filter-btn" data-format="telemetry">Telemetry</button>
+              <button type="button" class="format-filter-btn" data-format="identity">Identity</button>
+              <button type="button" class="format-filter-btn" data-format="systems">Systems</button>
+            </div>
+            <button type="button" class="btn-add-to-discipline" data-discipline="graphic">+ Select Works</button>
+          </div>
         </div>
         <div id="mapping-graphic-grid" class="mapping-grid"></div>
       </div>
@@ -134,6 +169,12 @@
       <legend>Categories</legend>
       <div id="category-checks"></div>
     </fieldset>
+    <fieldset>
+      <legend>Website Visibility (Mapping)</legend>
+      <label class="inline"><input type="checkbox" name="showGraphic"> Show in Graphic Designer (Works Showcase)</label>
+      <label class="inline"><input type="checkbox" name="showPhoto"> Show in Photography Showcase</label>
+      <label class="inline"><input type="checkbox" name="showVideo"> Show in Videography Showcase</label>
+    </fieldset>
     <label class="inline"><input type="checkbox" name="featured"> Featured (shown in the public works grid)</label>
     <label>Deliverables <textarea name="deliverables" rows="2" maxlength="1000"></textarea></label>
     <label>Tech <textarea name="tech" rows="2" maxlength="500"></textarea></label>
@@ -157,6 +198,67 @@
     <div class="dialog-actions">
       <button type="button" id="dialog-cancel">Cancel</button>
       <button type="submit" class="primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="map-media-dialog">
+  <form id="map-media-form">
+    <div class="media-dialog-header">
+      <div>
+        <h2 id="map-dialog-title">Select Project Media by Format</h2>
+        <p class="hint">Select images or videos from projects and assign them to a showcase discipline based on your chosen format.</p>
+      </div>
+      <button type="button" id="map-dialog-close" class="close-x-btn" aria-label="Close dialog">&times;</button>
+    </div>
+
+    <!-- Mapping Configuration -->
+    <div class="map-dialog-controls">
+      <div class="map-control-group">
+        <label for="map-target-discipline">Target Discipline
+          <select id="map-target-discipline" required>
+            <option value="photo">Photography</option>
+            <option value="video">Videography</option>
+            <option value="graphic">Graphic Designer (Works)</option>
+          </select>
+        </label>
+      </div>
+      <div class="map-control-group">
+        <label for="map-target-format">Target Format
+          <select id="map-target-format" required></select>
+        </label>
+      </div>
+    </div>
+
+    <!-- Limit Info Banner -->
+    <div id="map-limit-banner" class="map-limit-notice" role="status"></div>
+
+    <!-- Project Media Browser & Filter -->
+    <div class="map-dialog-browser-bar">
+      <input type="search" id="map-search" placeholder="Search project title, slug or ID..." aria-label="Search projects">
+      <select id="map-filter-format" aria-label="Filter projects by current format">
+        <option value="">Filter by current category: Any</option>
+      </select>
+      <select id="map-filter-status" aria-label="Filter projects by discipline status">
+        <option value="all">All Projects</option>
+        <option value="unmapped">Not in target discipline</option>
+        <option value="has-media">Has image / video only</option>
+      </select>
+    </div>
+
+    <!-- Project Media Selection Grid -->
+    <div id="map-project-list" class="map-project-picker-grid" role="region" aria-label="Available project media">
+      <!-- Populated dynamically with project cards -->
+    </div>
+
+    <p id="map-dialog-error" class="msg error" role="alert" hidden></p>
+
+    <div class="map-dialog-footer">
+      <div id="map-selection-count" class="hint">0 project(s) selected</div>
+      <div class="dialog-actions">
+        <button type="button" id="map-dialog-cancel">Cancel</button>
+        <button type="submit" id="map-dialog-submit" class="primary" disabled>Map Selected to Showcase</button>
+      </div>
     </div>
   </form>
 </dialog>

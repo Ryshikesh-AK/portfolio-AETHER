@@ -569,6 +569,13 @@ class WebGLDistortEngine {
       { id: '12', title: 'FLOATING SPHERE',        tag: 'MINIMAL SPHERICAL // CRYPTO',   src: 'assets/images/thumbs/thumb-7.jpeg'  },
       { id: '13', title: 'BOTANICAL GRID',         tag: 'BOTANICAL // GENERATIVE',       src: 'assets/images/thumbs/thumb-1.jpeg'  }
     ];
+    // Shuffle projects so each page refresh shows a different random arrangement
+    for (var si = projects.length - 1; si > 0; si--) {
+      var sj = Math.floor(Math.random() * (si + 1));
+      var stmp = projects[si];
+      projects[si] = projects[sj];
+      projects[sj] = stmp;
+    }
     this.scatterProjects = projects;
 
     var act = this._getActivePlacements();

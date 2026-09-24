@@ -28,6 +28,19 @@
 (function (global) {
   'use strict';
 
+  // Fisher-Yates (Knuth) shuffle — returns a new shuffled copy, never mutates the original.
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i];
+      a[i] = a[j];
+      a[j] = tmp;
+    }
+    return a;
+  }
+
+
   function applyProjectToCard(card, project) {
     if (project.id != null) {
       card.setAttribute('data-project-id', String(project.id));
@@ -141,6 +154,9 @@
           });
         }
 
+        // Shuffle so each page load shows a different random order
+        activeGraphic = shuffle(activeGraphic);
+
         var worksCards = document.querySelectorAll('.works-section > .projects-grid:not(.projects-grid-3col) > .project-card');
         var updated = 0;
         worksCards.forEach(function (card, index) {
@@ -169,9 +185,9 @@
             return ['photography', 'architecture', 'editorial', 'analog'].indexOf(c) !== -1;
           }));
         };
-        var activePhotos = res.data.filter(function (p) {
+        var activePhotos = shuffle(res.data.filter(function (p) {
           return isPhoto(p) && p.showPhoto !== false;
-        });
+        }));
 
         var photoCards = document.querySelectorAll('#photography .projects-grid-3col > .project-card');
         photoCards.forEach(function (card, index) {
@@ -198,9 +214,9 @@
             return ['videography', 'cinematic', 'commercial', 'experimental'].indexOf(c) !== -1;
           }));
         };
-        var activeVideos = res.data.filter(function (p) {
+        var activeVideos = shuffle(res.data.filter(function (p) {
           return isVideo(p) && p.showVideo !== false;
-        });
+        }));
 
         var videoCards = document.querySelectorAll('#videography .projects-grid-3col > .project-card');
         videoCards.forEach(function (card, index) {

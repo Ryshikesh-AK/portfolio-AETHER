@@ -1,9 +1,18 @@
 {
-  "name": "ashi-root",
+  "name": "ashi",
   "version": "1.0.0",
-  "private": true,
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "node Ashi/server/index.js",
-    "dev": "node Ashi/server/index.js"
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.63.0"
   }
 }

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#1e382b" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#16221c" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0d1310" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="meshGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
+    </linearGradient>
+    <radialGradient id="orbGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="30%" stop-color="#10b981" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0d1310" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="#0d1310"/>
+  <rect width="1920" height="1080" fill="url(#bgGlow)"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+
+  <!-- Graphical Elements -->
+  
+      <path d="M 400 800 C 600 400, 800 700, 1000 350 C 1200 650, 1400 350, 1550 750" fill="none" stroke="#10b981" stroke-width="2.5" opacity="0.8"/>
+      <path d="M 420 810 C 620 410, 820 710, 1020 360 C 1220 660, 1420 360, 1570 760" fill="none" stroke="#34d399" stroke-width="1.5" opacity="0.5"/>
+      <path d="M 440 820 C 640 420, 840 720, 1040 370 C 1240 670, 1440 370, 1590 770" fill="none" stroke="#6ee7b7" stroke-width="1" opacity="0.3"/>
+      <circle cx="1000" cy="350" r="16" fill="#34d399"/>
+      <circle cx="1200" cy="650" r="12" fill="#10b981"/>
+    
+
+  <!-- Project Title and Details Overlays for Rich Canvas Texture -->
+  <g opacity="0.9">
+    <rect x="120" y="110" width="160" height="34" rx="17" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)"/>
+    <text x="200" y="132" font-family="'Space Mono', monospace" font-size="12" font-weight="700" fill="#10b981" text-anchor="middle" letter-spacing="2">ARCHIVE // 2026</text>
+    
+    <text x="120" y="930" font-family="'General Sans', sans-serif, system-ui" font-size="68" font-weight="700" fill="#ffffff" letter-spacing="-1">LUMINA BIOCLIMATIC</text>
+    <text x="120" y="975" font-family="'Space Mono', monospace" font-size="16" fill="rgba(255,255,255,0.65)" letter-spacing="1.5">PASSIVE SOLAR PAVILION IDENTITY &amp; SPATIAL GUIDE</text>
+    
+    <text x="1800" y="975" font-family="'Space Mono', monospace" font-size="14" fill="#10b981" text-anchor="end" letter-spacing="2">PARAMETRIC TIMBER // BIOCLIMATIC // CARBON ZERO</text>
+  </g>
+
+  <!-- Tech Corner Markers -->
+  <path d="M 80 120 L 80 80 L 120 80" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 1840 120 L 1840 80 L 1800 80" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 80 960 L 80 1000 L 120 1000" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 1840 960 L 1840 1000 L 1800 1000" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+</svg>

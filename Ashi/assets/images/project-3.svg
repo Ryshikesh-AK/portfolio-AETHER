@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#27272a" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#18181b" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="meshGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
+    </linearGradient>
+    <radialGradient id="orbGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="30%" stop-color="#f43f5e" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="#0a0a0a"/>
+  <rect width="1920" height="1080" fill="url(#bgGlow)"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+
+  <!-- Graphical Elements -->
+  
+      <text x="960" y="590" font-family="'Space Mono', monospace, sans-serif" font-size="320" font-weight="700" fill="none" stroke="#f43f5e" stroke-width="3" text-anchor="middle" letter-spacing="10" opacity="0.85">M95</text>
+      <text x="960" y="590" font-family="'Space Mono', monospace, sans-serif" font-size="320" font-weight="700" fill="none" stroke="#ffffff" stroke-width="1" text-anchor="middle" letter-spacing="10" transform="translate(6, -6)" opacity="0.4">M95</text>
+      <rect x="360" y="240" width="1200" height="540" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="12 12"/>
+      <line x1="360" y1="510" x2="1560" y2="510" stroke="#f43f5e" stroke-width="1" stroke-dasharray="3 3"/>
+    
+
+  <!-- Project Title and Details Overlays for Rich Canvas Texture -->
+  <g opacity="0.9">
+    <rect x="120" y="110" width="160" height="34" rx="17" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)"/>
+    <text x="200" y="132" font-family="'Space Mono', monospace" font-size="12" font-weight="700" fill="#f43f5e" text-anchor="middle" letter-spacing="2">ARCHIVE // 2026</text>
+    
+    <text x="120" y="930" font-family="'General Sans', sans-serif, system-ui" font-size="68" font-weight="700" fill="#ffffff" letter-spacing="-1">MONOFORM FOUNDRY</text>
+    <text x="120" y="975" font-family="'Space Mono', monospace" font-size="16" fill="rgba(255,255,255,0.65)" letter-spacing="1.5">ALGORITHMIC VARIABLE TYPE SYSTEM &amp; SPECIMEN</text>
+    
+    <text x="1800" y="975" font-family="'Space Mono', monospace" font-size="14" fill="#f43f5e" text-anchor="end" letter-spacing="2">DYNAMIC GLYPHS // VARIABLE AXES // KINETIC SPECIMEN</text>
+  </g>
+
+  <!-- Tech Corner Markers -->
+  <path d="M 80 120 L 80 80 L 120 80" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 1840 120 L 1840 80 L 1800 80" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 80 960 L 80 1000 L 120 1000" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 1840 960 L 1840 1000 L 1800 1000" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+</svg>

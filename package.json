@@ -1,0 +1,9 @@
+{
+  "name": "ashi-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node Ashi/server/index.js",
+    "dev": "node Ashi/server/index.js"
+  }
+}

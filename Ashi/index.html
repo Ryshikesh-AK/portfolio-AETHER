@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AETHER / KINETIC STUDIO — Brand, Spatial & Generative Engineering</title>
+  <meta name="description"
+    content="Aether is an independent creative technology and digital design studio engineering tactile digital realities, spatial interfaces, and kinetic typography.">
+
+  <!-- Typography: Fontshare CDN for General Sans (as requested: link tag only, no local files) -->
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@200,300,400,500,600,700&display=swap" rel="stylesheet">
+
+  <!-- Typography: Google Fonts for Space Grotesk, Space Mono & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="styles/main.css?v=15">
+
+  <!-- Force fresh intro execution on bfcache page restoration -->
+  <script>
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) location.reload();
+    });
+  </script>
+</head>
+
+<body>
+
+  <!-- Precision Viewfinder Custom Cursor -->
+  <div id="app-cursor" class="app-cursor" aria-hidden="true"></div>
+
+  <!-- Subtle background ambient grid -->
+  <div class="bg-grid-overlay" aria-hidden="true"></div>
+
+  <!-- Soft glow behind the centerpiece: mobile-only, sits between the grid
+       overlay (z-index 0) and the WebGL canvas (z-index 2) so the camera
+       reads as visually dominant against the pale butter background. -->
+  <div class="centerpiece-glow" aria-hidden="true"></div>
+
+  <!-- Fullscreen WebGL Distortion Canvas (Starts at opacity: 0, revealed during SCENE_REVEAL) -->
+  <canvas id="webgl-canvas" aria-hidden="true" style="opacity: 0;"></canvas>
+
+  <!-- Floating Neo-Brutalist Ring Card Detail Badge (tracked per RAF on hovered card) -->
+  <div id="ring-card-badge" class="ring-card-badge" aria-hidden="true">
+    <div class="rcb-inner">
+      <span class="rcb-title" id="rcb-title">PROJECT TITLE</span>
+      <span class="rcb-tag" id="rcb-tag">CATEGORY // TAG</span>
+    </div>
+  </div>
+
+  <!-- Wireframe Centrepiece Toggle: BODY <-> EXPLODED -->
+  <div id="geo-toggle" class="geo-toggle" role="group" aria-label="Wireframe camera mode">
+    <button class="geo-btn active" data-geo="body" id="btn-body" aria-pressed="true">BODY</button>
+    <button class="geo-btn" data-geo="exploded" id="btn-exploded" aria-pressed="false">EXPLODED</button>
+  </div>
+
+  <!-- ========================================================================
+       FLOATING GLASS DOCK NAVIGATION
+       ======================================================================== -->
+  <header class="site-header" role="banner">
+    <nav class="floating-nav-dock" role="navigation" aria-label="Main Navigation">
+      <div class="dock-pill" aria-hidden="true"></div>
+      <a href="#home" class="nav-link active">Index</a>
+      <a href="#studio" class="nav-link">Studio</a>
+      <a href="#works" class="nav-link">Works</a>
+      <a href="#contact" class="nav-link">Inquiry</a>
+      <a href="/gallery" class="nav-link">Gallery</a>
+    </nav>
+
+    <!-- Compact mobile-only nav: hamburger trigger + slide-down panel.
+         Hidden on desktop; .floating-nav-dock above is hidden on mobile. -->
+    <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false"
+      aria-controls="mobile-nav-panel">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </header>
+
+  <nav id="mobile-nav-panel" class="mobile-nav-panel" aria-label="Mobile Navigation" aria-hidden="true">
+    <a href="#home" class="mobile-nav-link active">Index</a>
+    <a href="#studio" class="mobile-nav-link">Studio</a>
+    <a href="#works" class="mobile-nav-link">Works</a>
+    <a href="#contact" class="mobile-nav-link">Inquiry</a>
+    <a href="/gallery" class="mobile-nav-link">Gallery</a>
+  </nav>
+
+  <main>
+    <!-- ======================================================================
+         HERO SECTION
+         ====================================================================== -->
+    <section id="home" class="hero-section">
+      <!-- Minimal corner anchor — tagline acts as subtle label -->
+      <div class="hero-anchor" aria-label="Studio Discipline">
+        <div class="hero-anchor-tagline">Turning ideas with visuals &amp; Capturing moments into stories</div>
+      </div>
+
+      <!-- Scroll cue — bottom centre, subtle -->
+      <div class="scroll-indicator" aria-hidden="true">
+        <div class="scroll-icon">
+          <div class="scroll-wheel"></div>
+        </div>
+        <span>SCROLL</span>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TICKER MARQUEE
+         ====================================================================== -->
+    <div class="ticker-wrap" aria-hidden="true">
+      <div class="ticker-track">
+        <div class="ticker-item"><span class="ticker-dot"></span> GRAPHIC DESIGN</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> PHOTOGRAPHY</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> VIDEOEDITING</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> VISUAL ARTS</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> STORY TELLING</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> VIDEOGRAPHY</div>
+        <!-- Duplicate for infinite seamless marquee loop -->
+        <div class="ticker-item"><span class="ticker-dot"></span> GRAPHIC DESIGN</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> PHOTOGRAPHY</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> VIDEOEDITING</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> VISUAL ARTS</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> STORY TELLING</div>
+        <div class="ticker-item"><span class="ticker-dot"></span> VIDEOGRAPHY</div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         STUDIO & ABOUT ME SECTION
+         ====================================================================== -->
+    <section id="studio" class="studio-section">
+      <div class="studio-container">
+        <div class="section-label">STUDIO // ABOUT ME</div>
+
+        <!-- Main About Grid: Photo alongside Bio & Skills -->
+        <div class="about-grid">
+          <!-- Portrait Photo Column -->
+          <div class="about-photo-wrapper">
+            <div class="about-photo-frame">
+              <img src="assets\images\profile pic.jpg.jpeg" alt="Profile Portrait" class="about-photo" loading="lazy">
+              <div class="about-photo-badge">
+                <span class="vf-badge">STUDIO LEAD // 2026</span>
+              </div>
+            </div>
+            <div class="about-photo-caption">
+              <span class="caption-dot"></span> DISCIPLINE: BRAND, SPATIAL &amp; GENERATIVE
+            </div>
+          </div>
+
+          <!-- Bio & Skills Column -->
+          <div class="about-bio-column">
+            <h2 class="about-heading section-heading" data-reveal="chars">Hi iam Ashin Krishna.</h2>
+
+            <div class="about-bio-content">
+              <p class="about-bio-paragraph" data-reveal="words">
+                I’m a multidisciplinary visual artist working across graphic design, photography, video editing, and
+                visual storytelling. My work blends clean design with cinematic visuals and experimental ideas to create
+                content that feels personal, expressive, and built to be remembered
+              </p>
+            </div>
+
+            <!-- Education Qualification -->
+            <div class="about-education-section">
+              <div class="skills-label">ACADEMIC // EDUCATION</div>
+              <div class="education-card">
+                <div class="edu-card-top">
+                  <div class="edu-degree-wrap">
+                    <span class="edu-type-pill">DEGREE // VISUAL ARTS</span>
+                    <h3 class="edu-degree-title">B.Sc. Visual Communication</h3>
+                  </div>
+                  <span class="edu-badge">COLLEGE</span>
+                </div>
+                <div class="edu-institution-wrap">
+                  <span class="caption-dot"></span>
+                  <span class="edu-institution-name">Sri Manakula Vinayagar School of Arts and Science</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills & Tools Tag Pill Grid -->
+            <div class="about-skills-section">
+              <div class="skills-label">ARSENAL // SKILLS &amp; TOOLS</div>
+              <div class="skills-grid">
+                <span class="skill-tag">Photoshop</span>
+                <span class="skill-tag">Illustrator</span>
+                <span class="skill-tag">Premier pro</span>
+                <span class="skill-tag">Davnci</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         WORKS SHOWCASE & ASYMMETRIC GRID
+         ====================================================================== -->
+    <section id="works" class="works-section">
+      <div class="section-header">
+        <div>
+          <div class="section-label">SELECTED WORKS // 2024 — 2026</div>
+          <h2 class="section-heading" data-reveal="chars">GRAPHIC DESIGNER</h2>
+        </div>
+
+        <div class="category-filters" role="tablist" aria-label="Filter works">
+          <button class="filter-btn active" data-filter="all">ALL (05)</button>
+          <button class="filter-btn" data-filter="spatial">SPATIAL</button>
+          <button class="filter-btn" data-filter="telemetry">TELEMETRY</button>
+          <button class="filter-btn" data-filter="identity">IDENTITY</button>
+          <button class="filter-btn" data-filter="systems">SYSTEMS</button>
+        </div>
+      </div>
+
+      <div class="projects-grid">
+        <!-- Project 1: Large Asymmetric Card -->
+        <article class="project-card" data-category="spatial systems" data-project-id="1">
+          <div class="card-media-wrap">
+            <img class="webgl-texture-source" src="assets/images/Neobrutalist_digital_art_geometr…_20260918114558.jpeg"
+              alt="Aetheria OS Interface" loading="lazy">
+            <div class="card-viewfinder">
+              <span class="vf-badge">SPATIAL // 01</span>
+              <span class="vf-badge">THREE.JS SHADER</span>
+            </div>
+          </div>
+          <div class="card-meta-bottom">
+            <h3 class="card-title">AETHERIA OS <span class="card-arrow">&rarr;</span></h3>
+            <span class="card-sub">SPATIAL COMPUTING // 2026</span>
+          </div>
+        </article>
+
+        <!-- Project 2: Staggered Vertical Card -->
+        <article class="project-card" data-category="telemetry identity" data-project-id="2">
+          <div class="card-media-wrap">
+            <img class="webgl-texture-source" src="assets/images/Swiss_style_graphic_design_layout_20260918114558.jpeg"
+              alt="Vanguard Kinetic Telemetry" loading="lazy">
+            <div class="card-viewfinder">
+              <span class="vf-badge">AERO // 02</span>
+              <span class="vf-badge">HUD SYSTEM</span>
+            </div>
+          </div>
+          <div class="card-meta-bottom">
+            <h3 class="card-title">VANGUARD KINETIC <span class="card-arrow">&rarr;</span></h3>
+            <span class="card-sub">HYPERCAR TELEMETRY // 2026</span>
+          </div>
+        </article>
+
+        <!-- Project 3: Offset Left Card -->
+        <article class="project-card" data-category="identity systems" data-project-id="3">
+          <div class="card-media-wrap">
+            <img class="webgl-texture-source" src="assets/images/Bauhaus_geometric_art_composition_20260918114558.jpeg"
+              alt="Monoform Variable Type Foundry" loading="lazy">
+            <div class="card-viewfinder">
+              <span class="vf-badge">TYPE // 03</span>
+              <span class="vf-badge">VARIABLE SPECIMEN</span>
+            </div>
+          </div>
+          <div class="card-meta-bottom">
+            <h3 class="card-title">MONOFORM FOUNDRY <span class="card-arrow">&rarr;</span></h3>
+            <span class="card-sub">ALGORITHMIC TYPE // 2025</span>
+          </div>
+        </article>
+
+        <!-- Project 4: Offset Right Card -->
+        <article class="project-card" data-category="identity spatial" data-project-id="4">
+          <div class="card-media-wrap">
+            <img class="webgl-texture-source" src="assets/images/Brutalist_architecture_graphic_20260918114558.jpeg"
+              alt="Lumina Bioclimatic Pavilion" loading="lazy">
+            <div class="card-viewfinder">
+              <span class="vf-badge">ARCH // 04</span>
+              <span class="vf-badge">SOLAR SHADOWS</span>
+            </div>
+          </div>
+          <div class="card-meta-bottom">
+            <h3 class="card-title">LUMINA BIOCLIMATIC <span class="card-arrow">&rarr;</span></h3>
+            <span class="card-sub">SUSTAINABLE ARCH // 2025</span>
+          </div>
+        </article>
+
+        <!-- Project 5: Full Bleed Wide Card -->
+        <article class="project-card" data-category="systems telemetry" data-project-id="5">
+          <div class="card-media-wrap">
+            <img class="webgl-texture-source" src="assets/images/Vaporwave_grid_landscape_sunset_20260918114558.jpeg"
+              alt="Solaria Continental Energy Grid" loading="lazy">
+            <div class="card-viewfinder">
+              <span class="vf-badge">GRID // 05</span>
+              <span class="vf-badge">REALTIME WS STREAM</span>
+            </div>
+          </div>
+          <div class="card-meta-bottom">
+            <h3 class="card-title">SOLARIA ENERGY <span class="card-arrow">&rarr;</span></h3>
+            <span class="card-sub">CONTINENTAL TELEMETRY // 2026</span>
+          </div>
+        </article>
+      </div>
+
+      <!-- ====================================================================
+           PHOTOGRAPHY SHOWCASE & 3-COLUMN ASYMMETRIC GRID
+           ==================================================================== -->
+      <div class="works-subgroup" id="photography">
+        <div class="section-header">
+          <div>
+            <div class="section-label">SELECTED WORKS // 35MM &amp; MEDIUM FORMAT</div>
+            <h2 class="section-heading" data-reveal="chars">PHOTOGRAPHY</h2>
+          </div>
+
+          <div class="category-filters" role="tablist" aria-label="Filter photography">
+            <button class="filter-btn active" data-filter="all">ALL (03)</button>
+            <button class="filter-btn" data-filter="architecture">ARCHITECTURE</button>
+            <button class="filter-btn" data-filter="editorial">EDITORIAL</button>
+            <button class="filter-btn" data-filter="analog">ANALOG</button>
+          </div>
+        </div>
+
+        <div class="projects-grid-3col">
+          <!-- Photo 1: Brutalist Architecture -->
+          <article class="project-card" data-category="architecture analog" data-project-id="p1">
+            <div class="card-media-wrap aspect-3-4">
+              <img class="webgl-texture-source" src="assets/images/photo-1-architecture.jpg"
+                alt="Brutalist Monolith Architectural Photography" loading="lazy">
+              <div class="card-viewfinder">
+                <span class="vf-badge">ARCH // 35MM</span>
+                <span class="vf-badge">LEICA // F/8</span>
+              </div>
+            </div>
+            <div class="card-meta-bottom">
+              <h3 class="card-title">BRUTALIST MONOLITH <span class="card-arrow">&rarr;</span></h3>
+              <span class="card-sub">ARCHITECTURAL GEOMETRY // 2026</span>
+            </div>
+          </article>
+
+          <!-- Photo 2: Avant-Garde Editorial Portrait -->
+          <article class="project-card" data-category="editorial" data-project-id="p2">
+            <div class="card-media-wrap aspect-1-1">
+              <img class="webgl-texture-source" src="assets/images/photo-2-portrait.jpg"
+                alt="Avant-Garde Shadow & Form Editorial Portrait" loading="lazy">
+              <div class="card-viewfinder">
+                <span class="vf-badge">EDITORIAL // 02</span>
+                <span class="vf-badge">CHIAROSCURO</span>
+              </div>
+            </div>
+            <div class="card-meta-bottom">
+              <h3 class="card-title">AVANT-GARDE SHADOW <span class="card-arrow">&rarr;</span></h3>
+              <span class="card-sub">HAUTE COUTURE SILHOUETTE // 2026</span>
+            </div>
+          </article>
+
+          <!-- Photo 3: Volcanic Seascape Analog -->
+          <article class="project-card" data-category="analog" data-project-id="p3">
+            <div class="card-media-wrap aspect-3-4">
+              <img class="webgl-texture-source" src="assets/images/photo-3-landscape.jpg"
+                alt="Volcanic Seascape Medium Format Analog" loading="lazy">
+              <div class="card-viewfinder">
+                <span class="vf-badge">ANALOG // HASSELBLAD</span>
+                <span class="vf-badge">NORDIC MONOLITH</span>
+              </div>
+            </div>
+            <div class="card-meta-bottom">
+              <h3 class="card-title">VOLCANIC SEASCAPE <span class="card-arrow">&rarr;</span></h3>
+              <span class="card-sub">MEDIUM FORMAT ANALOG // 2025</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           VIDEOGRAPHY SHOWCASE & 3-COLUMN ASYMMETRIC GRID
+           ==================================================================== -->
+      <div class="works-subgroup" id="videography">
+        <div class="section-header">
+          <div>
+            <div class="section-label">CINEMATIC MOTION // DIRECTION &amp; COLOR</div>
+            <h2 class="section-heading" data-reveal="chars">VIDEOGRAPHY</h2>
+          </div>
+
+          <div class="category-filters" role="tablist" aria-label="Filter videography">
+            <button class="filter-btn active" data-filter="all">ALL (03)</button>
+            <button class="filter-btn" data-filter="cinematic">CINEMATIC</button>
+            <button class="filter-btn" data-filter="commercial">COMMERCIAL</button>
+            <button class="filter-btn" data-filter="experimental">EXPERIMENTAL</button>
+          </div>
+        </div>
+
+        <div class="projects-grid-3col video-grid">
+          <!-- Video 1: Hypercar Night Drift -->
+          <article class="project-card" data-category="cinematic commercial" data-project-id="v1">
+            <div class="card-media-wrap aspect-16-9">
+              <img class="webgl-texture-source" src="assets/images/video-1-hypercar.jpg"
+                alt="Kinetic Hypercar Drift Anamorphic Frame" loading="lazy">
+              <div class="card-viewfinder">
+                <span class="vf-badge">REC // 24FPS</span>
+                <span class="vf-badge">4K DCI ANAMORPHIC</span>
+              </div>
+              <div class="video-play-indicator">
+                <span class="play-icon">&#9654;</span> 02:45 // DCI 4K
+              </div>
+            </div>
+            <div class="card-meta-bottom">
+              <h3 class="card-title">KINETIC HYPERCAR DRIFT <span class="card-arrow">&rarr;</span></h3>
+              <span class="card-sub">DIRECTOR OF PHOTOGRAPHY // 2026</span>
+            </div>
+          </article>
+
+          <!-- Video 2: Brutalist Atrium Fashion Film -->
+          <article class="project-card" data-category="cinematic commercial" data-project-id="v2">
+            <div class="card-media-wrap aspect-16-9">
+              <img class="webgl-texture-source" src="assets/images/video-2-fashion.jpg"
+                alt="Brutalist Atrium Commercial Brand Film" loading="lazy">
+              <div class="card-viewfinder">
+                <span class="vf-badge">ARRI ALEXA 65</span>
+                <span class="vf-badge">VOLUMETRIC LIGHT</span>
+              </div>
+              <div class="video-play-indicator">
+                <span class="play-icon">&#9654;</span> 01:48 // COMMERCIAL
+              </div>
+            </div>
+            <div class="card-meta-bottom">
+              <h3 class="card-title">BRUTALIST ATRIUM <span class="card-arrow">&rarr;</span></h3>
+              <span class="card-sub">COMMERCIAL DIRECTION // 2025</span>
+            </div>
+          </article>
+
+          <!-- Video 3: Cybernetic Stage Echo -->
+          <article class="project-card" data-category="experimental" data-project-id="v3">
+            <div class="card-media-wrap aspect-16-9">
+              <img class="webgl-texture-source" src="assets/images/video-3-stage.jpg"
+                alt="Cybernetic Stage Echo Live Visuals" loading="lazy">
+              <div class="card-viewfinder">
+                <span class="vf-badge">35MM MOTION</span>
+                <span class="vf-badge">GLSL LIVE LASERS</span>
+              </div>
+              <div class="video-play-indicator">
+                <span class="play-icon">&#9654;</span> 03:20 // LIVE STAGE
+              </div>
+            </div>
+            <div class="card-meta-bottom">
+              <h3 class="card-title">CYBERNETIC STAGE ECHO <span class="card-arrow">&rarr;</span></h3>
+              <span class="card-sub">EXPERIMENTAL LIVE VISUALS // 2026</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         INTERACTIVE CONTACT & INQUIRY TERMINAL
+         ====================================================================== -->
+    <section id="contact" class="contact-section">
+      <div class="contact-card">
+        <div class="contact-header">
+          <div class="section-label">START A COLLABORATION</div>
+          <h2 class="contact-title" data-reveal="chars">HAVE A VISION IN MIND?</h2>
+          <p class="contact-desc">
+            We are currently scheduling bespoke digital identities, spatial design systems, and WebGL experiences for
+            Q3/Q4.
+          </p>
+        </div>
+
+        <div class="contact-interactive-bar">
+          <button id="copy-email-btn" class="copy-email-btn">
+            <span>studio@aether-kinetic.com</span>
+            <span class="card-arrow">&rarr; COPY</span>
+          </button>
+          <a href="mailto:studio@aether-kinetic.com?subject=Project%20Inquiry" class="inquiry-btn">
+            DIRECT DISPATCH
+          </a>
+        </div>
+
+        <div class="footer-meta-row">
+          <div>&copy; 2026 AETHER KINETIC STUDIO. ALL RIGHTS RESERVED.</div>
+          <div class="social-links">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-link">GITHUB</a>
+            <a href="https://behance.net" target="_blank" rel="noopener noreferrer" class="social-link">BEHANCE</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-link">TWITTER / X</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-link">INSTAGRAM</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================================
+       CASE STUDY DETAIL MODAL (Seamless Inline Project Exploration)
+       ======================================================================== -->
+  <div id="project-modal" class="project-modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content-window">
+      <button id="modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="modal-header">
+        <div id="modal-meta" class="modal-meta">SPATIAL COMPUTING // 2026</div>
+        <h2 id="modal-title" class="modal-title">PROJECT TITLE</h2>
+      </div>
+      <img id="modal-banner" class="modal-media-banner"
+        src="assets/images/Neobrutalist_digital_art_geometr…_20260918114558.jpeg" alt="Project Banner">
+      <div class="modal-grid-specs">
+        <div class="modal-desc-body" id="modal-desc">
+          Detailed case study overview and engineering approach.
+        </div>
+        <dl class="modal-specs-list">
+          <div class="spec-entry">
+            <dt>RELEASE YEAR</dt>
+            <dd id="modal-year">2026</dd>
+          </div>
+          <div class="spec-entry">
+            <dt>KEY DELIVERABLES</dt>
+            <dd id="modal-deliverables">Design System, HUD, Architecture</dd>
+          </div>
+          <div class="spec-entry">
+            <dt>TECHNOLOGY STACK</dt>
+            <dd id="modal-tech">Three.js, WebGL, GSAP</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notice -->
+  <div id="toast-notice" class="toast-notice" role="alert" aria-live="polite">COPIED TO CLIPBOARD</div>
+
+  <!-- Dependencies: Three.js, GSAP 3.12, ScrollTrigger, Lenis -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+
+  <!-- Application Modules -->
+  <script src="scripts/webgl-distort.js?v=19"></script>
+  <script src="scripts/intro.js?v=19"></script>
+  <script src="scripts/animations.js?v=19"></script>
+  <script src="scripts/api-client.js?v=1"></script>
+  <script src="scripts/project-cards.js?v=1"></script>
+  <script src="scripts/main.js?v=19"></script>
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" width="400" height="260">
+  <defs>
+    <linearGradient id="g_06" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#18122b" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="#18122b" rx="12"/>
+  <rect width="400" height="260" fill="url(#g_06)" opacity="0.3" rx="12"/>
+  <rect x="1" y="1" width="398" height="258" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" rx="11"/>
+
+  <!-- Graphical shape -->
+  <circle cx="200" cy="130" r="45" fill="none" stroke="#c084fc" stroke-width="2" stroke-dasharray="6 4"/>
+
+  <!-- Typography metadata -->
+  <text x="24" y="38" font-family="'Space Mono', monospace" font-size="11" font-weight="700" fill="#a855f7" letter-spacing="1.5">// 06</text>
+  <text x="376" y="38" font-family="'Space Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" text-anchor="end" letter-spacing="1">QUANTUM HUD</text>
+  
+  <text x="24" y="228" font-family="'General Sans', system-ui, sans-serif" font-size="18" font-weight="700" fill="#ffffff" letter-spacing="-0.3">NEURAL CHRONO</text>
+</svg>

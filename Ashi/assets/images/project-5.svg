@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#3f1f0f" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#24140b" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#140c06" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="meshGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
+    </linearGradient>
+    <radialGradient id="orbGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="30%" stop-color="#f97316" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#140c06" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="#140c06"/>
+  <rect width="1920" height="1080" fill="url(#bgGlow)"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+
+  <!-- Graphical Elements -->
+  
+      <polygon points="960,240 1280,420 1280,720 960,900 640,720 640,420" fill="none" stroke="#f97316" stroke-width="2" opacity="0.8"/>
+      <polygon points="960,300 1220,450 1220,690 960,840 700,690 700,450" fill="none" stroke="#fb923c" stroke-width="1" stroke-dasharray="6 6" opacity="0.5"/>
+      <line x1="960" y1="240" x2="960" y2="900" stroke="#f97316" stroke-width="1" opacity="0.4"/>
+      <line x1="640" y1="420" x2="1280" y2="720" stroke="#f97316" stroke-width="1" opacity="0.4"/>
+      <line x1="640" y1="720" x2="1280" y2="420" stroke="#f97316" stroke-width="1" opacity="0.4"/>
+      <circle cx="960" cy="570" r="70" fill="none" stroke="#fdba74" stroke-width="2"/>
+    
+
+  <!-- Project Title and Details Overlays for Rich Canvas Texture -->
+  <g opacity="0.9">
+    <rect x="120" y="110" width="160" height="34" rx="17" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)"/>
+    <text x="200" y="132" font-family="'Space Mono', monospace" font-size="12" font-weight="700" fill="#f97316" text-anchor="middle" letter-spacing="2">ARCHIVE // 2026</text>
+    
+    <text x="120" y="930" font-family="'General Sans', sans-serif, system-ui" font-size="68" font-weight="700" fill="#ffffff" letter-spacing="-1">SOLARIA ENERGY</text>
+    <text x="120" y="975" font-family="'Space Mono', monospace" font-size="16" fill="rgba(255,255,255,0.65)" letter-spacing="1.5">CONTINENTAL SMART-GRID TELEMETRY &amp; OS</text>
+    
+    <text x="1800" y="975" font-family="'Space Mono', monospace" font-size="14" fill="#f97316" text-anchor="end" letter-spacing="2">KINETIC ENERGY // INFRASTRUCTURE // HIGH FREQUENCY</text>
+  </g>
+
+  <!-- Tech Corner Markers -->
+  <path d="M 80 120 L 80 80 L 120 80" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 1840 120 L 1840 80 L 1800 80" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 80 960 L 80 1000 L 120 1000" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 1840 960 L 1840 1000 L 1800 1000" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" width="400" height="260">
+  <defs>
+    <linearGradient id="g_07" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#091c24" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="#091c24" rx="12"/>
+  <rect width="400" height="260" fill="url(#g_07)" opacity="0.3" rx="12"/>
+  <rect x="1" y="1" width="398" height="258" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" rx="11"/>
+
+  <!-- Graphical shape -->
+  <path d="M 120 130 Q 160 80 200 130 T 280 130" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+
+  <!-- Typography metadata -->
+  <text x="24" y="38" font-family="'Space Mono', monospace" font-size="11" font-weight="700" fill="#0284c7" letter-spacing="1.5">// 07</text>
+  <text x="376" y="38" font-family="'Space Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" text-anchor="end" letter-spacing="1">ACOUSTICS</text>
+  
+  <text x="24" y="228" font-family="'General Sans', system-ui, sans-serif" font-size="18" font-weight="700" fill="#ffffff" letter-spacing="-0.3">STRATA AUDIO</text>
+</svg>

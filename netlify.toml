@@ -1,6 +1,12 @@
 [build]
   publish = "."
 
+# Direct /admin requests to /admin/index.html
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200
+
 # Protect internal directories and config files
 [[redirects]]
   from = "/server/*"

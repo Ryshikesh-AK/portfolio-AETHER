@@ -198,7 +198,7 @@ const site = {
     label: 'START A COLLABORATION',
     heading: 'HAVE A VISION IN MIND?',
     desc: 'We are currently scheduling bespoke digital identities, spatial design systems, and WebGL experiences for Q3/Q4.',
-    email: 'studio@aether-kinetic.com',
+    email: 'ashinkrishna27p@gmail.com',
     mailtoSubject: 'Project Inquiry',
     copyright: '\u00a9 2026 AETHER KINETIC STUDIO. ALL RIGHTS RESERVED.',
     socials: [

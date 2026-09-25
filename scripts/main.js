@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (copyBtn && toast) {
     copyBtn.addEventListener('click', () => {
-      const email = 'studio@aether-kinetic.com';
+      const email = 'ashinkrishna27p@gmail.com';
       navigator.clipboard.writeText(email).then(() => {
         toast.textContent = `COPIED TO CLIPBOARD: ${email}`;
         toast.classList.add('show');

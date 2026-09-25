@@ -19,7 +19,8 @@
   const urlOf = (p) => {
     if (!p) return '';
     if (p.startsWith('http://') || p.startsWith('https://')) return p;
-    return '/' + p.split('/').map(encodeURIComponent).join('/');
+    const clean = p.replace(/\\/g, '/').replace(/^\/+/, '');
+    return '/' + clean.split('/').map(encodeURIComponent).join('/');
   };
 
   const state = { projects: [], categories: [], labelOf: new Map(), activeCategory: '' };

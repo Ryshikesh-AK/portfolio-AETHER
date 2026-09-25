@@ -296,18 +296,20 @@ class AnimationController {
         }
       );
 
-      // Parallax scroll scrub for subtle depth
-      const yOffset = index % 2 === 0 ? -35 : 35;
-      gsap.to(card, {
-        y: yOffset,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: card,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 1.2
-        }
-      });
+      // Parallax scroll scrub for subtle depth (desktop only — disabled on mobile/tablet single-column to avoid card overlap)
+      if (window.innerWidth > 768) {
+        const yOffset = index % 2 === 0 ? -35 : 35;
+        gsap.to(card, {
+          y: yOffset,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2
+          }
+        });
+      }
     });
 
     // About Section Portrait Photo entrance

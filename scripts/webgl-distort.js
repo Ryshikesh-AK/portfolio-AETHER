@@ -321,11 +321,14 @@ class WebGLDistortEngine {
     return line;
   }
 
-  // Viewport-width-aware centerpiece scale: ~40vw on mobile (dominant focal
-  // object per the mobile gallery composition), desktop keeps its original
-  // fixed presence untouched.
+  // Viewport-width-aware centerpiece scale: ~40vw on mobile, scaled smoothly
+  // for tablet viewports (768px-1200px), and calibrated at 1.08 for widescreen desktop.
   _computeCenterpieceScale() {
-    if (this.width >= 768) return 1.08;
+    if (this.width >= 1200) return 1.08;
+    if (this.width >= 768) {
+      // Smooth interpolation for tablet / mid-size screens (0.75 at 768px -> 1.08 at 1200px)
+      return 0.75 + 0.33 * ((this.width - 768) / (1200 - 768));
+    }
     var targetVw = 0.40;
     var perspectiveFalloff = 0.80; // approx apparent-size factor at z=-220
     var baseWidth = 260; // approx world-unit bounding width of assembled camera
@@ -543,11 +546,26 @@ class WebGLDistortEngine {
 
   _getActivePlacements() {
     var isMobile   = this.width < 768;
+    var isTablet   = this.width >= 768 && this.width < 1100;
     var placements = isMobile ? this._mobilePlacements() : this._desktopPlacements();
     var refWidth   = isMobile ? 390 : 1440;
     var coordScale = this.width / refWidth;
-    var cardScale  = isMobile ? coordScale * 0.34 : coordScale;
-    return { placements: placements, coordScale: coordScale, cardScale: cardScale, scale: cardScale, isMobile: isMobile };
+
+    // On tablet / medium viewports, compress the outer card X span so cards stay comfortably in-bounds
+    if (isTablet) {
+      var maxCardX = 810;
+      var safeHalfW = (this.width * 0.5) - 85;
+      var maxPossibleX = maxCardX * coordScale;
+      if (maxPossibleX > safeHalfW) {
+        var xCompress = safeHalfW / maxPossibleX;
+        placements = placements.map(function(p) {
+          return { x: p.x * xCompress, y: p.y * 0.88, z: p.z, tiltY: p.tiltY, tiltX: p.tiltX };
+        });
+      }
+    }
+
+    var cardScale  = isMobile ? coordScale * 0.34 : (isTablet ? coordScale * 0.85 : coordScale);
+    return { placements: placements, coordScale: coordScale, cardScale: cardScale, scale: cardScale, isMobile: isMobile, isTablet: isTablet };
   }
 
   setupScatteredCards() {

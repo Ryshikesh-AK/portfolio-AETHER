@@ -106,8 +106,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // then close the panel so it doesn't stay open over the new section.
     mobilePanel.querySelectorAll('.mobile-nav-link').forEach((link) => {
       link.addEventListener('click', (e) => {
-        const targetEl = document.querySelector(link.getAttribute('href'));
+        const href = link.getAttribute('href') || '';
         closeMobileNav();
+        // For non-hash links (like /gallery), let the browser navigate normally
+        if (!href.startsWith('#')) return;
+
+        const targetEl = document.querySelector(href);
         if (!targetEl) return;
         e.preventDefault();
         const headerHeight = siteHeader ? siteHeader.getBoundingClientRect().height : 0;

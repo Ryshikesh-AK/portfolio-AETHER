@@ -7,6 +7,12 @@
   to = "/admin/index.html"
   status = 200
 
+# Direct /gallery requests to /gallery/index.html
+[[redirects]]
+  from = "/gallery"
+  to = "/gallery/index.html"
+  status = 200
+
 # Protect internal directories and config files
 [[redirects]]
   from = "/server/*"

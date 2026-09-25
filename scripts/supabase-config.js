@@ -6,8 +6,8 @@
   'use strict';
 
   global.SUPABASE_CONFIG = {
-    url: 'https://YOUR_PROJECT_ID.supabase.co',
-    anonKey: 'YOUR_SUPABASE_ANON_KEY',
+    url: 'https://wsxeyfgtrikijkijnbyz.supabase.co',
+    anonKey: 'sb_publishable_f33IqfP7v610QPzWAWYv-w_jcYu5dlT',
     storageBucket: 'portfolio-media'
   };
 

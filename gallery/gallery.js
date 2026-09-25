@@ -137,13 +137,37 @@
   // ---- boot -------------------------------------------------------------------------------
   (async () => {
     try {
-      const [projects, categories] = await Promise.all([getJSON('/api/projects'), getJSON('/api/categories')]);
+      let projects, categories;
+      try {
+        [projects, categories] = await Promise.all([getJSON('/api/projects'), getJSON('/api/categories')]);
+      } catch (err) {
+        // Fallback to Supabase client if hosted on Netlify without local Express
+        const sb = typeof window.getSupabaseClient === 'function' ? window.getSupabaseClient() : null;
+        if (!sb) throw err;
+        const [pRes, cRes] = await Promise.all([
+          sb.from('projects').select('*').order('sort_order', { ascending: true }),
+          sb.from('categories').select('*').order('sort_order', { ascending: true })
+        ]);
+        if (pRes.error || cRes.error) throw pRes.error || cRes.error;
+        projects = (pRes.data || []).map(p => ({
+          ...p,
+          desc: p.description || p.desc || '',
+          heroSlot: p.hero_slot,
+          heroTitle: p.hero_title,
+          heroTag: p.hero_tag,
+          showPhoto: p.show_photo !== undefined ? p.show_photo : true,
+          showVideo: p.show_video !== undefined ? p.show_video : true,
+          showGraphic: p.show_graphic !== undefined ? p.show_graphic : true
+        }));
+        categories = cRes.data || [];
+      }
       state.projects = projects;
       state.categories = categories;
       categories.forEach((c) => state.labelOf.set(c.slug, c.label));
       renderFilters();
       renderGrid();
     } catch (e) {
+      console.error(e);
       $('#gallery-grid').replaceChildren(el('p', { class: 'empty-state' }, 'Could not load the gallery. Please try again shortly.'));
     }
   })();

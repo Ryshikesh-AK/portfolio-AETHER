@@ -131,7 +131,7 @@ class IntroSequence {
 
     // 3. Image sources for boxed sequential cycling (real artworks)
     const imageSources = [
-      'assets/images/Neobrutalist_digital_art_geometr…_20260918114558.jpeg',
+      'assets/images/Neobrutalist_digital_art_geometr_20260918114558.jpeg',
       'assets/images/Bauhaus_geometric_art_composition_20260918114558.jpeg',
       'assets/images/Brutalist_architecture_graphic_20260918114558.jpeg',
       'assets/images/Swiss_style_graphic_design_layout_20260918114558.jpeg'

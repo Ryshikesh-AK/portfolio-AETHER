@@ -7,7 +7,7 @@
 // (including the U+2026 ellipsis in the Neobrutalist filename).
 
 const IMG = 'assets/images/';
-const NEO = IMG + 'Neobrutalist_digital_art_geometr\u2026_20260918114558.jpeg';
+const NEO = IMG + 'Neobrutalist_digital_art_geometr_20260918114558.jpeg';
 
 const categories = [
   { slug: 'spatial',       label: 'SPATIAL' },

@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       year: '2026',
       deliverables: 'Spatial Design System, Holographic HUD, Ambient Audio Engine, Micro-Interactions',
       tech: 'Three.js, WebGL 2.0, Web Audio API, GSAP Motion, Shaders',
-      banner: 'assets/images/Neobrutalist_digital_art_geometr…_20260918114558.jpeg',
+      banner: 'assets/images/Neobrutalist_digital_art_geometr_20260918114558.jpeg',
       desc: 'Aetheria OS represents our exploration into post-screen spatial interaction. Built around an acoustic ambient field, the interface dynamically warps visual density based on cognitive auditory feedback. Every UI primitive responds to gravity vectors with sub-pixel inertia.'
     },
     '2': {

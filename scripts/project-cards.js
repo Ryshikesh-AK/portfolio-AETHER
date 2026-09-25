@@ -208,42 +208,13 @@
           photoAllBtn.textContent = 'ALL (' + String(activePhotos.length).padStart(2, '0') + ')';
         }
 
-        // 3. Videography showcase cards (#videography .projects-grid-3col > .project-card):
-        var isVideo = function (p) {
-          return String(p.id).startsWith('v') || (Array.isArray(p.categories) && p.categories.some(function (c) {
-            return ['videography', 'cinematic', 'commercial', 'experimental'].indexOf(c) !== -1;
-          }));
-        };
-        var activeVideos = shuffle(res.data.filter(function (p) {
-          return isVideo(p) && p.showVideo !== false;
-        }));
-
-        var videoCards = document.querySelectorAll('#videography .projects-grid-3col > .project-card');
-        videoCards.forEach(function (card, index) {
-          var project = activeVideos[index];
-          if (project) {
-            card.removeAttribute('data-admin-disabled');
-            card.style.display = '';
-            applyProjectToCard(card, project);
-            updated++;
-          } else {
-            card.setAttribute('data-admin-disabled', 'true');
-            card.style.display = 'none';
-          }
-        });
-
-        var videoAllBtn = document.querySelector('#videography .filter-btn[data-filter="all"]');
-        if (videoAllBtn) {
-          videoAllBtn.textContent = 'ALL (' + String(activeVideos.length).padStart(2, '0') + ')';
-        }
-
         // Refresh layout if ScrollTrigger or WebGL is present
         if (window.ScrollTrigger) window.ScrollTrigger.refresh();
         if (window.webglEngine && typeof window.webglEngine.onResize === 'function') {
           window.webglEngine.onResize();
         }
 
-        return { ok: true, updated: updated, total: worksCards.length + photoCards.length + videoCards.length };
+        return { ok: true, updated: updated, total: worksCards.length + photoCards.length };
       })
       .catch(function (e) {
         // Defensive: getProjects() already fails soft and shouldn't reject,

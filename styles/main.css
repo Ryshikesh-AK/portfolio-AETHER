@@ -652,7 +652,7 @@ body.intro-running .geo-toggle {
 }
 
 /* ==========================================================================
-   DISCIPLINE SHOWCASE SUBGROUPS (PHOTOGRAPHY & VIDEOGRAPHY)
+   DISCIPLINE SHOWCASE SUBGROUPS (PHOTOGRAPHY)
    ========================================================================== */
 .works-subgroup {
   margin-top: 130px;
@@ -681,46 +681,6 @@ body.intro-running .geo-toggle {
 .projects-grid-3col>.project-card:nth-child(3) {
   grid-column: span 4;
   margin-top: -16px;
-}
-
-.projects-grid-3col.video-grid>.project-card:nth-child(1) {
-  margin-top: 0;
-}
-
-.projects-grid-3col.video-grid>.project-card:nth-child(2) {
-  margin-top: 36px;
-}
-
-.projects-grid-3col.video-grid>.project-card:nth-child(3) {
-  margin-top: -12px;
-}
-
-/* Video Play Badge */
-.video-play-indicator {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: #000000;
-  color: var(--accent-primary);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 800;
-  padding: 5px 10px;
-  border: 2px solid #000000;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  z-index: 12;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
-  letter-spacing: 0.05em;
-  transition: all 0.2s ease;
-}
-
-.project-card:hover .video-play-indicator {
-  background: var(--accent-primary);
-  color: #000000;
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #000000;
 }
 
 /* Media Frame bound to WebGL texture plane */

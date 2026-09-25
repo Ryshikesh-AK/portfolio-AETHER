@@ -105,28 +105,6 @@
         <div id="mapping-photography-grid" class="mapping-grid"></div>
       </div>
 
-      <!-- Videography Section -->
-      <div class="mapping-section">
-        <div class="mapping-section-title">
-          <div class="mapping-title-left">
-            <span class="section-badge video">VIDEOGRAPHY</span>
-            <h3>Videography Mapping</h3>
-            <span id="video-count" class="mapping-count">0 of 3 visible</span>
-          </div>
-          <div class="mapping-title-actions">
-            <div class="format-filter-bar" id="video-format-filters" role="group" aria-label="Filter videography by format">
-              <button type="button" class="format-filter-btn active" data-format="all">All</button>
-              <button type="button" class="format-filter-btn" data-format="cinematic">Cinematic</button>
-              <button type="button" class="format-filter-btn" data-format="commercial">Commercial</button>
-              <button type="button" class="format-filter-btn" data-format="experimental">Experimental</button>
-            </div>
-            <button type="button" class="btn-add-to-discipline" data-discipline="video">+ Select Videos</button>
-          </div>
-        </div>
-        <p class="mapping-section-hint"><strong>Showcase limit: 3 items maximum.</strong> The 3-column asymmetric layout displays up to 3 selected videos. Turn off an active video to select a different one.</p>
-        <div id="mapping-videography-grid" class="mapping-grid"></div>
-      </div>
-
       <!-- Graphic Designer Section -->
       <div class="mapping-section">
         <div class="mapping-section-title">
@@ -173,7 +151,6 @@
       <legend>Website Visibility (Mapping)</legend>
       <label class="inline"><input type="checkbox" name="showGraphic"> Show in Graphic Designer (Works Showcase)</label>
       <label class="inline"><input type="checkbox" name="showPhoto"> Show in Photography Showcase</label>
-      <label class="inline"><input type="checkbox" name="showVideo"> Show in Videography Showcase</label>
     </fieldset>
     <label class="inline"><input type="checkbox" name="featured"> Featured (shown in the public works grid)</label>
     <label>Deliverables <textarea name="deliverables" rows="2" maxlength="1000"></textarea></label>
@@ -218,7 +195,6 @@
         <label for="map-target-discipline">Target Discipline
           <select id="map-target-discipline" required>
             <option value="photo">Photography</option>
-            <option value="video">Videography</option>
             <option value="graphic">Graphic Designer (Works)</option>
           </select>
         </label>

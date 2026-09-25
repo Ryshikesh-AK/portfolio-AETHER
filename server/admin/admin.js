@@ -128,8 +128,7 @@
   // ---- section groupings ----------------------------------------------------------------
   const SECTION_DEFS = [
     { title: 'Works', cls: 'works', slugs: ['spatial', 'telemetry', 'identity', 'systems'] },
-    { title: 'Photography', cls: 'photo', slugs: ['photography', 'architecture', 'editorial', 'analog'] },
-    { title: 'Videography', cls: 'video', slugs: ['videography', 'cinematic', 'commercial', 'experimental'] }
+    { title: 'Photography', cls: 'photo', slugs: ['photography', 'architecture', 'editorial', 'analog'] }
   ];
 
   function sectionFor(slug) {
@@ -346,19 +345,6 @@
     }
   });
 
-  form.elements.showVideo.addEventListener('change', () => {
-    if (form.elements.showVideo.checked) {
-      const active = state.projects.filter((x) => isVideoProject(x) && x.showVideo !== false && (!state.editing || x.id !== state.editing.id)).length;
-      if (active >= 3) {
-        form.elements.showVideo.checked = false;
-        dialogError('Videography showcase limit reached (3 of 3 items active). Deselect an existing video first.');
-        notify('Videography showcase limit reached (3 of 3 items active).', 'error');
-      } else {
-        dialogError(null);
-      }
-    }
-  });
-
   fileInput.addEventListener('change', () => {
     if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
     dialogError(null);
@@ -383,13 +369,6 @@
         return;
       }
     }
-    if (e.showVideo.checked) {
-      const active = state.projects.filter((x) => isVideoProject(x) && x.showVideo !== false && (!id || x.id !== id)).length;
-      if (active >= 3) {
-        dialogError('Videography showcase limit reached (3 of 3 items active). Please uncheck "Show in Videography Showcase" or hide another video.');
-        return;
-      }
-    }
 
     const body = {
       title: e.title.value,
@@ -400,8 +379,7 @@
       categories: [...$('#category-checks').querySelectorAll('input:checked')].map((i) => i.value),
       featured: e.featured.checked,
       showGraphic: e.showGraphic.checked,
-      showPhoto: e.showPhoto.checked,
-      showVideo: e.showVideo.checked
+      showPhoto: e.showPhoto.checked
     };
     if (state.editing || e.slug.value.trim()) body.slug = e.slug.value.trim();   // blank slug on a new project = derive from title
 
@@ -486,10 +464,9 @@
     notify('Category added');
   }));
 
-  // ---- mapping (Photography, Videography, Graphic Designer) ---------------------------
+  // ---- mapping (Photography, Graphic Designer) ---------------------------
   const DISCIPLINE_LIMITS = {
-    photo: 3,
-    video: 3
+    photo: 3
   };
 
   const DISCIPLINE_FORMATS = {
@@ -498,12 +475,6 @@
       { slug: 'editorial', label: 'Editorial' },
       { slug: 'analog', label: 'Analog' },
       { slug: 'photography', label: 'General Photo' }
-    ],
-    video: [
-      { slug: 'cinematic', label: 'Cinematic' },
-      { slug: 'commercial', label: 'Commercial' },
-      { slug: 'experimental', label: 'Experimental' },
-      { slug: 'videography', label: 'General Video' }
     ],
     graphic: [
       { slug: 'spatial', label: 'Spatial' },
@@ -515,7 +486,6 @@
 
   const mappingFilters = {
     photo: 'all',
-    video: 'all',
     graphic: 'all'
   };
 
@@ -641,7 +611,6 @@
 
   function updateMappingCounts() {
     const photoGrid = $('#mapping-photography-grid');
-    const videoGrid = $('#mapping-videography-grid');
     const graphicGrid = $('#mapping-graphic-grid');
 
     if (photoGrid) {
@@ -662,24 +631,6 @@
         }
       }
     }
-    if (videoGrid) {
-      const allV = state.projects.filter(isVideoProject);
-      const activeV = allV.filter((p) => p.showVideo !== false);
-      const c = $('#video-count');
-      if (c) {
-        const max = DISCIPLINE_LIMITS.video;
-        if (activeV.length === max) {
-          c.className = 'mapping-count full';
-          c.textContent = `${activeV.length} of ${max} visible (Limit reached)`;
-        } else if (activeV.length > max) {
-          c.className = 'mapping-count over';
-          c.textContent = `${activeV.length} of ${max} visible (Exceeds limit of ${max})`;
-        } else {
-          c.className = 'mapping-count available';
-          c.textContent = `${activeV.length} of ${max} visible (${max - activeV.length} available)`;
-        }
-      }
-    }
     if (graphicGrid) {
       const allG = state.projects.filter(isGraphicProject);
       const activeG = allG.filter((p) => p.showGraphic !== false);
@@ -696,24 +647,17 @@
     return String(p.id).startsWith('p') || cats.some((c) => ['photography', 'architecture', 'editorial', 'analog'].includes(c));
   }
 
-  function isVideoProject(p) {
-    const cats = p.categories || [];
-    return String(p.id).startsWith('v') || cats.some((c) => ['videography', 'cinematic', 'commercial', 'experimental'].includes(c));
-  }
-
   function isGraphicProject(p) {
     const cats = p.categories || [];
     const isPhoto = isPhotoProject(p);
-    const isVideo = isVideoProject(p);
-    if (!isPhoto && !isVideo) return true;
+    if (!isPhoto) return true;
     return cats.some((c) => ['spatial', 'telemetry', 'identity', 'systems'].includes(c)) || p.heroSlot != null;
   }
 
   function renderMapping() {
     const photoGrid = $('#mapping-photography-grid');
-    const videoGrid = $('#mapping-videography-grid');
     const graphicGrid = $('#mapping-graphic-grid');
-    if (!photoGrid || !videoGrid || !graphicGrid) return;
+    if (!photoGrid || !graphicGrid) return;
 
     // 1. Photography
     const allPhotos = state.projects.filter(isPhotoProject);
@@ -728,20 +672,7 @@
       ));
     }
 
-    // 2. Videography
-    const allVideos = state.projects.filter(isVideoProject);
-    const vFilter = mappingFilters.video;
-    const videos = vFilter === 'all' ? allVideos : allVideos.filter((p) => (p.categories || []).includes(vFilter));
-    if (videos.length) {
-      videoGrid.replaceChildren(...videos.map((p) => renderMappingCard(p, 'video', 'showVideo', 'Videography')));
-    } else {
-      videoGrid.replaceChildren(el('div', { class: 'mapping-empty-state' },
-        el('strong', {}, `No videography projects matching format "${vFilter}".`),
-        el('p', { class: 'hint' }, 'Use "+ Select Videos" above to map projects with this format.')
-      ));
-    }
-
-    // 3. Graphic Designer
+    // 2. Graphic Designer
     const allGraphics = state.projects.filter(isGraphicProject);
     const gFilter = mappingFilters.graphic;
     const graphics = gFilter === 'all' ? allGraphics : allGraphics.filter((p) => (p.categories || []).includes(gFilter));
@@ -790,13 +721,13 @@
       return;
     }
     const max = DISCIPLINE_LIMITS[discKey];
-    const propName = discKey === 'photo' ? 'showPhoto' : 'showVideo';
-    const discName = discKey === 'photo' ? 'Photography' : 'Videography';
-    const itemType = discKey === 'photo' ? 'photo' : 'video';
+    const propName = 'showPhoto';
+    const discName = 'Photography';
+    const itemType = 'photo';
 
     // Count how many projects currently in this discipline are active on the site (excluding ones currently being selected in the picker)
     const activeInDisc = state.projects.filter(
-      (p) => (discKey === 'photo' ? isPhotoProject(p) : isVideoProject(p)) &&
+      (p) => isPhotoProject(p) &&
              p[propName] !== false &&
              !selectedMapProjectIds.has(p.id)
     ).length;
@@ -901,12 +832,12 @@
             // Validate selection limit before adding
             if (DISCIPLINE_LIMITS[discKey]) {
               const max = DISCIPLINE_LIMITS[discKey];
-              const propName = discKey === 'photo' ? 'showPhoto' : 'showVideo';
-              const discName = discKey === 'photo' ? 'Photography' : 'Videography';
-              const itemType = discKey === 'photo' ? 'photo' : 'video';
+              const propName = 'showPhoto';
+              const discName = 'Photography';
+              const itemType = 'photo';
 
               const activeCount = state.projects.filter(
-                (x) => (discKey === 'photo' ? isPhotoProject(x) : isVideoProject(x)) &&
+                (x) => isPhotoProject(x) &&
                        x[propName] !== false &&
                        !selectedMapProjectIds.has(x.id)
               ).length;
@@ -1010,9 +941,9 @@
       // Validation check before PATCHing
       if (DISCIPLINE_LIMITS[disc]) {
         const max = DISCIPLINE_LIMITS[disc];
-        const propName = disc === 'photo' ? 'showPhoto' : 'showVideo';
+        const propName = 'showPhoto';
         const activeCount = state.projects.filter(
-          (x) => (disc === 'photo' ? isPhotoProject(x) : isVideoProject(x)) &&
+          (x) => isPhotoProject(x) &&
                  x[propName] !== false &&
                  !selectedMapProjectIds.has(x.id)
         ).length;
@@ -1036,11 +967,9 @@
         let newCats = (p.categories || []).filter((c) => !discFormats.includes(c));
         if (format) newCats.push(format);
         if (disc === 'photo' && !newCats.includes('photography')) newCats.push('photography');
-        if (disc === 'video' && !newCats.includes('videography')) newCats.push('videography');
 
         const payload = { categories: newCats };
         if (disc === 'photo') payload.showPhoto = true;
-        if (disc === 'video') payload.showVideo = true;
         if (disc === 'graphic') payload.showGraphic = true;
 
         await api('PATCH', `/api/admin/projects/${p.id}`, payload);
@@ -1067,7 +996,6 @@
   // Setup format filter bars per section
   [
     { barId: 'photo-format-filters', disc: 'photo' },
-    { barId: 'video-format-filters', disc: 'video' },
     { barId: 'graphic-format-filters', disc: 'graphic' }
   ].forEach(({ barId, disc }) => {
     const bar = document.getElementById(barId);

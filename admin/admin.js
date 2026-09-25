@@ -26,9 +26,14 @@
     return n;
   };
 
-  // Stored paths look like "assets/images/x.jpeg" or "media/original/x.jpg"; make them absolute and URL-safe.
-  const urlOf = (p) => '/' + p.split('/').map(encodeURIComponent).join('/');
-  const isUploaded = (p) => !!p && typeof p.image === 'string' && p.image.startsWith('media/');
+  // Stored paths ("assets/images/x.jpeg", "media/original/x.jpg", or full URLs like "https://...") -> URL-safe.
+  const urlOf = (p) => {
+    if (!p) return '';
+    if (typeof p !== 'string') return '';
+    if (p.startsWith('http://') || p.startsWith('https://')) return p;
+    return '/' + p.split('/').map(encodeURIComponent).join('/');
+  };
+  const isUploaded = (p) => !!p && typeof p.image === 'string' && (p.image.startsWith('media/') || p.image.includes('supabase.co'));
 
   // ---- messages -------------------------------------------------------------------------
   let statusTimer;
@@ -48,23 +53,27 @@
 
   const getSB = () => (typeof window.getSupabaseClient === 'function' ? window.getSupabaseClient() : null);
 
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
   // ---- api ------------------------------------------------------------------------------
   async function api(method, url, body) {
     const sb = getSB();
-    // Try local Express API first
-    try {
-      const opts = { method, credentials: 'same-origin', cache: 'no-store', headers: {} };
-      if (body instanceof FormData) opts.body = body;
-      else if (body !== undefined) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
-      const r = await fetch(url, opts);
-      if (r.status === 401 && url !== LOGIN) {
-        showLogin('Session expired. Please log in again.');
-        throw Object.assign(new Error('Session expired'), { handled: true });
+    // Try local Express API first ONLY if on localhost
+    if (isLocalhost) {
+      try {
+        const opts = { method, credentials: 'same-origin', cache: 'no-store', headers: {} };
+        if (body instanceof FormData) opts.body = body;
+        else if (body !== undefined) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+        const r = await fetch(url, opts);
+        if (r.status === 401 && url !== LOGIN) {
+          showLogin('Session expired. Please log in again.');
+          throw Object.assign(new Error('Session expired'), { handled: true });
+        }
+        if (r.ok) return await r.json().catch(() => null);
+      } catch (localErr) {
+        if (localErr && localErr.handled) throw localErr;
+        // If local server unreachable, fallback to Supabase
       }
-      if (r.ok) return await r.json().catch(() => null);
-    } catch (localErr) {
-      if (localErr && localErr.handled) throw localErr;
-      // If local server unreachable or returns 404, fallback to Supabase
     }
 
     if (!sb) throw new Error('Backend unavailable and Supabase client not configured.');
@@ -1271,10 +1280,12 @@
   // ---- start ----------------------------------------------------------------------------
   (async () => {
     let user = null;
-    try {
-      const r = await fetch('/api/admin/me', { credentials: 'same-origin', cache: 'no-store' });
-      if (r.ok) user = (await r.json()).user;
-    } catch (e) { /* not logged in / server unreachable */ }
+    if (isLocalhost) {
+      try {
+        const r = await fetch('/api/admin/me', { credentials: 'same-origin', cache: 'no-store' });
+        if (r.ok) user = (await r.json()).user;
+      } catch (e) { /* not logged in / server unreachable */ }
+    }
 
     // If local session not found, check Supabase auth session
     if (!user) {

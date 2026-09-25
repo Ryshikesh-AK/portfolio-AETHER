@@ -15,8 +15,12 @@
     n.append(...kids.filter((x) => x != null && x !== false));
     return n;
   };
-  // Stored paths ("assets/images/x.jpeg", "media/thumbs/x.jpg") -> absolute, URL-safe.
-  const urlOf = (p) => (p ? '/' + p.split('/').map(encodeURIComponent).join('/') : '');
+  // Stored paths ("assets/images/x.jpeg", "media/thumbs/x.jpg", or full URLs like "https://...") -> URL-safe.
+  const urlOf = (p) => {
+    if (!p) return '';
+    if (p.startsWith('http://') || p.startsWith('https://')) return p;
+    return '/' + p.split('/').map(encodeURIComponent).join('/');
+  };
 
   const state = { projects: [], categories: [], labelOf: new Map(), activeCategory: '' };
   let entranceObserver = null;

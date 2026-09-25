@@ -235,15 +235,24 @@
     const email = f.username.value.trim();
     const password = f.password.value;
     const err = $('#login-error');
+    err.hidden = true;
 
-    // 1. Try local Express login first if running locally
-    try {
-      const res = await api('POST', LOGIN, { username: email, password: password });
-      if (res && res.user) user = res.user;
-    } catch (e) {
-      // 2. If local fails or not available, try Supabase Auth
-      const sb = getSB();
-      if (sb) {
+    const sb = getSB();
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    // If on localhost and Express server is running, try local auth first
+    if (isLocalhost) {
+      try {
+        const res = await api('POST', LOGIN, { username: email, password: password });
+        if (res && res.user) user = res.user;
+      } catch (e) {
+        // Fall back to Supabase if local login fails
+      }
+    }
+
+    // On Netlify / production or if local failed, authenticate via Supabase
+    if (!user) {
+      if (sb && window.SUPABASE_CONFIG && !window.SUPABASE_CONFIG.url.includes('YOUR_PROJECT_ID')) {
         const { data: authData, error: authErr } = await sb.auth.signInWithPassword({
           email: email,
           password: password
@@ -257,7 +266,7 @@
           user = { username: authData.user.email, id: authData.user.id };
         }
       } else {
-        err.textContent = e.message || 'Login failed';
+        err.textContent = 'Supabase credentials are not set in scripts/supabase-config.js. Please add your Project URL and anonKey.';
         err.hidden = false;
         return;
       }
